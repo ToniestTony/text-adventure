@@ -2,9 +2,45 @@
     <head>
         <meta charset="utf-8">
         <title>WIP</title>
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
     </head>
     <body>
-        <h1>TEST</h1>
-        <p>test</p>
+        <header>
+            <h1>Incremental game</h1>
+            <small>by ToniestTony</small>
+        </header>
+        
+        <main>
+            
+            <div id="introduction">
+                <h2>Welcome to this game, </h2>
+                <br>
+                <label for="introName">What is your name?</label>
+                <input id="introName" name="introName" type="text">
+                <button class="button1" onclick="introVerify()">Submit</button><br>
+                <span id="introError"></span>
+            </div>
+            
+            <div class="hide" id="main">
+                <h2 id="mainName"></h2>
+                <p>Health: <span class="outerBar"><span class="innerBar healthBar"></span></span> (<span id="mainHp"></span>/<span id="mainTotalHp"></span>)</p>
+                <p>Attack: <span id="mainWeapon"></span> (<span id="mainAtk"></span>)</p>
+                <p>Defense: <span id="mainArmor"></span> (<span id="mainDef"></span>)</p>
+                <p>Gold: <span id="mainGold"></span></p>
+                <p>Level: <span id="mainLevel"></span></p>
+                <p>Experience: <span class="outerBar"><span class="innerBar xpBar"></span></span> (<span id="mainXp"></span>/<span id="mainTotalXp"></span>)</p>
+            </div>
+            
+        
+        </main>
+        
+        
+        <footer>
+            <small>
+                Game made by ToniestTony , <a href="https://github.com/ToniestTony/ToniestTony.github.io">See the github</a>
+            </small>
+        </footer>
+        <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/main.js"></script>
     </body>
 </html>
