@@ -17,18 +17,74 @@
                 <br>
                 <label for="introName">What is your name?</label>
                 <input id="introName" name="introName" type="text">
-                <button class="button1" onclick="introVerify()">Submit</button><br>
+                <button class="button buttonBlue" onclick="introVerify()">Submit</button><br>
                 <span id="introError"></span>
             </div>
             
-            <div class="hide" id="main">
-                <h2 id="mainName"></h2>
-                <p>Health: <span class="outerBar"><span class="innerBar healthBar"></span></span> (<span id="mainHp"></span>/<span id="mainTotalHp"></span>)</p>
-                <p>Attack: <span id="mainWeapon"></span> (<span id="mainAtk"></span>)</p>
-                <p>Defense: <span id="mainArmor"></span> (<span id="mainDef"></span>)</p>
-                <p>Gold: <span id="mainGold"></span></p>
-                <p>Level: <span id="mainLevel"></span></p>
-                <p>Experience: <span class="outerBar"><span class="innerBar xpBar"></span></span> (<span id="mainXp"></span>/<span id="mainTotalXp"></span>)</p>
+            <div class="hide" id="player">
+                <h2 id="playerName"></h2>
+                <p>Health: <span class="outerBar"><span class="innerBar healthBar"></span></span> (<span id="playerHp"></span>/<span id="playerTotalHp"></span>)</p>
+                <p>Attack: <span id="playerWeapon"></span> (<span id="playerAtk"></span>)</p>
+                <p>Defense: <span id="playerArmor"></span> (<span id="playerDef"></span>)</p>
+                <p>Gold: <span id="playerGold"></span></p>
+                <p>Experience: <span class="outerBar"><span class="innerBar xpBar"></span></span> (<span id="playerXp"></span>/<span id="playerTotalXp"></span>)</p>
+                <p>Level: <span id="playerLevel"></span></p>
+            </div>
+            
+            <div class="hide" id="location">
+                <h2>Location: <span id="locationName1"></span></h2>
+                <p id="locationDesc"></p>
+
+            </div>
+            
+            <div class="hide" id="event">
+                
+                <p id="locationLog"></p><br>
+                
+                <button id="exploreButton" class="button buttonBlue" onclick="explore()">Explore <span id="locationName2"></span></button>
+                <div id="eventsList">
+                    
+                </div><br>
+                
+                <div id="eventActive" class="hide">
+                    <h2 id="eventTitle"></h2><br>
+
+
+                    <div id="eventFirst">
+                        <h3 id="nameFirst"></h3>
+                        
+                        <span id="hpFirstAll" class="hide">
+                            <span class="outerBar"><span class="innerBar healthBar"></span></span> 
+                            <span id="hpFirst"></span>
+                        </span><br>
+                        
+                        <span id="descFirst"></span><br>
+                        <span id="weaponFirst"></span><br>
+                        <span id="armorFirst"></span>
+                    </div>
+
+
+                    <div id="eventSecond">
+                        <h3 id="nameSecond"></h3>
+                        <span id="hpSecondAll" class="hide">
+                            <span class="outerBar"><span class="innerBar enemyBar"></span></span> 
+                            <span id="hpSecond"></span>
+                        </span><br>
+                        <span id="descSecond"></span><br>
+                    </div>
+                    <button id="eventAttack" class="hide button buttonRed" onclick="attack()">Attack</button>
+                    <button id="eventRun" class="hide button buttonRed" onclick="run()">Run</button>
+                    <br>
+
+            </div>
+                
+        </div>
+            
+            <div class="hide" id="change">
+                <h3>Change location:</h3>
+                <div id="locationList">
+                    
+                </div>
             </div>
             
         
@@ -41,6 +97,10 @@
             </small>
         </footer>
         <script src="js/jquery-3.2.1.min.js"></script>
-    <script src="js/main.js"></script>
+        
+    <script src="js/enemy.js"></script>
+    <script src="js/location.js"></script>
+    <script src="js/game.js"></script>
+    
     </body>
 </html>

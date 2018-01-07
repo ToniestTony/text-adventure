@@ -40,22 +40,36 @@ main{
     margin: 10px;
 }
 
-.hide{
-    display: none;
+
+
+#introduction, #player, #location, #event, #change{
+    margin: 10px;
+    margin-bottom: 30px;
 }
 
 /*INTRODUCTION*/
 
-.button1{
+.button{
     background-color: #2aa0f7;
     border: 3px solid black;
     padding: 6px;
     font-size: 20px;
 }
 
-.button1:hover{
-    background-color: #1d6ca7;
-}
+.buttonBlue{background-color: #2aa0f7;}
+.buttonBlue:hover{background-color: #1d6ca7;}
+
+.buttonGreen{background-color: #4dd03c;}
+.buttonGreen:hover{background-color: #226a19;}
+
+.buttonRed{background-color: #ff3131;}
+.buttonRed:hover{background-color: #b10909;}
+
+.locked{background-color: gray;}
+.locked:hover{background-color: gray;}
+
+
+
 
 #introError{
     color: red;
@@ -89,11 +103,48 @@ main{
     background-color: #f2ba00;
 }
 
-#mainName{
+#playerName{
     font-size: 32px;
     display: inline-block;
     margin-bottom: 5px;
     border-bottom: 3px solid black;
+}
+
+
+/* EVENT */
+#eventActive{
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#eventFirst{
+    border-left: 2px solid black;
+    padding-left: 10px;
+    vertical-align: top;
+    display: inline-block;
+    width: 48%;
+}
+
+#eventSecond{
+    vertical-align: top;
+    display: inline-block;
+    width: 48%;
+}
+
+#eventAttack{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.dmg{
+    color: red;
+    font-weight: bold;
+}
+
+
+.hide{
+    display: none;
 }
 
 
