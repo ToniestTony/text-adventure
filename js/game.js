@@ -2,7 +2,13 @@
 // TODO: [X]Ajouter random au gold/xp
 // TODO: [X]Ajouter random aux attaques
 // TODO: [X]Ajouter locked locations
-// TODO: []Ajouter level bonus (health/attack)
+// TODO: [X]Ajouter level bonus (health/attack)
+// TODO: [X]Ajouter save/load (local storage)
+// TODO: [X]Ajouter autosave
+// TODO: [X]Ajouter mort
+// TODO: [X]Ajouter types of events (gold, item, key)
+// TODO: []Changer arme/armure pour ajouter type
+// TODO: []Ajouter drop aux ennemis
 // TODO: []Ajouter Contenu
 
 //CONSTANTS
@@ -18,15 +24,23 @@ var game={
     },
     
     update:function(){
+        //delete button
+        if(localStorage.getItem("player")==null){
+            $("#deleteButton").addClass("hide");   
+        }else{
+            $("#deleteButton").removeClass("hide");  
+        }
+        
         //check if showed values are correct
         player.hp=between(player.hp,0,player.totalHp)
         player.xp=between(player.xp,0,player.totalXp)
         
         //level up
-        if(player.xp>=player.totalXp){
+        if(player.xp>=player.totalXp && player.state!="level"){
             player.level++;
             player.xp=0;
             player.totalXp=Math.floor(10*Math.pow(1.2,player.level-1));
+            player.state="level";
             game.updateLocations();
         }
         
@@ -46,10 +60,12 @@ var game={
         id("playerTotalHp",player.totalHp)
         
         id("playerWeapon",player.weapon.name)
-        id("playerAtk",player.weapon.atk)
+        id("playerAtk",player.weapon.value+"+"+player.strength)
         
         id("playerArmor",player.armor.name)
-        id("playerDef",player.armor.def)
+        id("playerDef",player.armor.value)
+        
+        id("playerLuck",player.luck)
         
         id("playerGold",player.gold)
         
@@ -71,12 +87,12 @@ var game={
         }
         
         for(var i=0;i<game.log.length;i++){
-            logs+=game.log[i]+"<br>";
+            logs+="-"+game.log[i]+"<br>";
         }
         id("locationLog",logs);
         
         id("locationName2",player.location.name)
-        
+        $("levelUp").addClass("hide");
         //event
         if(player.state=="battle"){
             
@@ -85,7 +101,6 @@ var game={
             
             id("eventTitle","Fighting "+player.enemy.name);
             
-            console.log(player.name)
             id("nameFirst",capitalize(player.name));
             id("descFirst","You");
             
@@ -96,20 +111,30 @@ var game={
             var enemyBar=Math.floor((player.enemy.hp/player.enemy.totalHp)*100);
             $(".enemyBar").width(enemyBar+"%");
             
-            id("weaponFirst",player.weapon.name+" ("+player.weapon.atk+" atk)");
-            id("armorFirst",player.armor.name+" ("+player.armor.def+" def)");
+            id("weaponFirst",player.weapon.name+" ("+player.weapon.value+" atk)");
+            id("armorFirst",player.armor.name+" ("+player.armor.value+" def)");
             
             id("nameSecond",capitalize(player.enemy.name));
             id("descSecond",player.enemy.desc);
             id("hpSecond",'('+player.enemy.hp+'/'+player.enemy.totalHp+')');
             
-        }else{
+        }else if(player.state=="free"){
             $("#eventActive").css("display","none");
             if(player.location.events!=undefined){
                 $("#exploreButton").removeClass("hide");
             }else{
                 $("#exploreButton").addClass("hide");
             }
+        }else if(player.state=="level"){
+            if(player.luck>=40){
+                $("#levelUpLuck").hide();
+            }
+            $("#levelUp").removeClass("hide");
+            $("#levelUpNum").html(player.level);
+            $("#exploreButton,#eventsList,#locationList,#change,#exploreButton").addClass("hide");
+            $("#change").hide();
+        }else{
+            $("#levelUp").addClass("hide");
         }
         
         
@@ -128,6 +153,11 @@ var game={
                 var valid=true;
                 if(event[5]==1){
                     valid=false;
+                }
+                
+                if(event[1]=="talk"){
+                    var answers=JSON.stringify(event[2]);
+                    functionCalled="talk("+answers+")";
                 }
                 
                 if(event[1]=="heal"){
@@ -176,24 +206,28 @@ var game={
 }
 
 var player={
-    name:"",
+    name:"undefined",
     state:"free",
     location:locations.village,
     enemy:undefined,
-    hp:10,
-    totalHp:10,
+    strength:0,
+    luck:0,
+    hp:20,
+    totalHp:20,
     
     weapon:{
+        type:"weapon",
         name:"Fists",
-        atk:2,
+        value:2,
     },
     
     armor:{
+        type:"armor",
         name:"Leather clothes",
-        def:1,
+        value:1,
     },
     
-    gold:10,
+    gold:5,
     
     level:1,
     xp:0,
@@ -218,9 +252,22 @@ function explore(){
                 $("#eventAttack,#eventRun,#hpFirstAll,#hpSecondAll").removeClass("hide");
                 player.state="battle";
                 player.enemy=event[1];
+                
                 game.log.push("You have encountered <b>"+event[1].name+"</b>!");
-
+                enemyDead=false;
                 fadeInDiv("eventActive",fadingTime);
+            }else if(event[0]=="gold"){
+                game.log.push(event[1]);
+                player.gold+=event[3];
+            }else if(event[0]=="custom"){
+                game.log.push(event[1]);
+                var customs=locations[""+event[3]].customs;
+                for(var j=0;j<customs.length;j++){
+                    if(customs[j][0]==event[4]){
+                        customs[j]=event[5];
+                    }
+                }
+                loc.events.splice(i,1);
             }
         }else{
             game.log.push("You found nothing.");
@@ -230,27 +277,28 @@ function explore(){
     }   
 }
 
+var enemyDead=false;
 
 function attack(){
     if(player.state=="battle"){
         //player attack
-        var variableDmg=Math.ceil(ran(-player.weapon.atk/4,player.weapon.atk/4));
+        var variableDmg=Math.ceil(ran(-player.weapon.value/4,player.weapon.value/4));
         
-        var dmg=variableDmg+player.weapon.atk-player.enemy.def;
+        var dmg=Math.ceil(variableDmg+player.weapon.value+player.strength)-player.enemy.def;
         if(dmg<0){dmg=0;}
-        var enemyDead=false;
         var playerDead=false;
         player.enemy.hp-=dmg;
-        if(player.enemy.hp<=0){
+        if(player.enemy.hp<=0 && enemyDead==false){
             //defeated
             enemyDead=true;
             //random xp/gold
-            var tempXp=Math.ceil(ran(-player.enemy.xp/4,player.enemy.xp/4)+player.enemy.xp);
+            var randXp=ran(-player.enemy.xp/4,player.enemy.xp/4);
+            var tempXp=Math.ceil(randXp+(player.enemy.xp*(player.luck+100)/100));
             if(tempXp<0){
                 tempXp=0;
             }
-            
-            var tempGold=Math.ceil(ran(-player.enemy.gold/4,player.enemy.gold/4)+player.enemy.gold);
+            var randGold=ran(-player.enemy.gold/4,player.enemy.gold/4);
+            var tempGold=Math.ceil(randGold+(player.enemy.gold*(player.luck+100)/100));
             if(tempGold<0){
                 tempGold=0;
             }
@@ -260,10 +308,33 @@ function attack(){
             
             game.log.push("<b>"+capitalize(player.enemy.name)+"</b> was defeated! You gained <b>"+tempXp+"</b> xp and <b>"+tempGold+"</b> gold!")
             
+            //Loot
+            if(player.enemy.loot!=undefined){
+                for(var i=0;i<player.enemy.loot.length;i++){
+                    var rand=ran(0,100);
+                    var loot=player.enemy.loot[i];
+                    console.log("r"+rand)
+                    console.log(loot.chance)
+                    if(rand<=(loot.chance+Math.ceil(player.luck/4))){
+                        //loot obtained
+                        var better=equip(loot.item,false);
+                        if(better==true){
+                            game.log.push("<b>"+capitalize(player.enemy.name)+"</b> dropped <b>"+loot.item.name+"</b> ("+loot.item.value+") and you equipped it!");
+                        }else{
+                            game.log.push("<b>"+capitalize(player.enemy.name)+"</b> dropped <b>"+loot.item.name+"</b> ("+loot.item.value+") but your "+loot.item.type+" is better.");
+                        }
+                        
+                    }
+                }
+            }
+            
+            
             
             $("#eventActive").fadeOut(fadingTime,function(){
                 player.enemy.hp=player.enemy.totalHp;
-                player.state="free";
+                if(player.state!="level"){
+                    player.state="free";
+                }
                 game.update();
             })
             
@@ -272,7 +343,7 @@ function attack(){
         if(!enemyDead){
             //enemy attack
             var variableEneDmg=Math.ceil(ran(-player.enemy.atk/4,player.enemy.atk/4));
-            var eneDmg=player.enemy.atk-player.armor.def;
+            var eneDmg=Math.ceil((variableEneDmg+player.enemy.atk)-player.armor.value);
             if(eneDmg<0){eneDmg=0;}
             player.hp-=eneDmg;
             if(player.hp<=0){
@@ -285,6 +356,15 @@ function attack(){
                 game.log.push("You received <span class='dmg'>"+eneDmg+"</span> damage!")
             }else{
                 //player dead
+                game.log.push("<span class='dmg'>You died.</span>")
+                
+            
+                player.enemy.hp=player.enemy.totalHp;
+                player.state="dead";
+                $("#change").hide();
+                $("#dead").removeClass("hide");
+                $("#exploreButton").hide();
+                game.update();
             }
         }
         
@@ -298,16 +378,30 @@ function run(){
     $("#eventActive").fadeOut(fadingTime,function(){
         player.enemy.hp=player.enemy.totalHp;
         player.state="free";
-        game.log.push("You ran away from the fight.")
+        if(player.gold>0){
+            var goldLost=Math.ceil(player.gold*(0.2-(player.luck/200)));
+            player.gold-=goldLost;
+        }
+        
+        game.log.push("You ran away from the fight, but you lost <b>"+goldLost+"</b> gold.")
         game.update();
     })
 }
 
 
-function changeLocation(location){
+function changeLocation(location,show){
     if(player.state=="free"){
         $("#change").fadeOut(fadingTime);
-        $("#location").fadeOut(fadingTime,function(){
+        if(show!=undefined){
+            $("#location").fadeOut(fadingTime,function(){
+            player.location=locations[location];
+            game.updateText();
+            game.updateLocations();
+            $("#location").fadeIn(fadingTime);
+            $("#change").fadeIn(fadingTime);
+            })
+        }else{
+            $("#location").fadeOut(fadingTime,function(){
             if(player.location!=locations[location]){
                game.log.push("You travelled to "+locations[location].name+".");
             }
@@ -316,10 +410,28 @@ function changeLocation(location){
             game.updateLocations();
             $("#location").fadeIn(fadingTime);
             $("#change").fadeIn(fadingTime);
-        })
+            })
+        }
+        
     }
 }
 
+
+function levelup(attr){
+    if(attr=="health"){
+        player.totalHp+=4;
+    }else if(attr=="strength"){
+        player.strength+=0.5;
+    }else if(attr=="luck"){
+        player.luck+=2;
+    }
+    player.hp=player.totalHp;
+    player.state="free";
+    $("#levelUp").addClass("hide");
+    $("#exploreButton,#eventsList,#locationList,#change,#exploreButton").removeClass("hide");
+    $("#change").show();
+    save();
+}
 
 
 function introVerify(){
@@ -328,7 +440,7 @@ function introVerify(){
         player.name=name;
         
         $("#playerName").html(capitalize(name));
-        fadeOutInDiv("introduction","player,#location,#event,#change",fadingTime)
+        fadeOutInDiv("introduction","player,#location,#event,#change,#saveButton,#loadButton,#saveMessage",fadingTime)
 
         game.updateText();
         game.updateObj=setInterval(game.update.bind(game),1000);
@@ -341,6 +453,15 @@ function introVerify(){
 
 
 //events
+
+function nothing(){}
+
+function talk(ans){
+    var answers=ans;
+    var rand=ran(0,answers.length-1);
+    game.log.push(answers[rand]);
+    game.update();
+}
 
 function heal(gold,hp){
     if(player.gold>=gold){
@@ -358,22 +479,27 @@ function buy(gold,item,xp){
     if(player.gold>=gold){
         player.gold-=gold;
         if(item!=undefined){
-            var objItem=item;
-            if(objItem.atk!=undefined){
-                player.weapon=objItem;
-            }else{
-                player.armor=objItem;
-            }
-            game.log.push("You equipped "+objItem.name+" for <b>"+gold+"</b> gold!");
-            //remove event?
-            for(var i=0;i<player.location.customs.length;i++){
-                var custom=player.location.customs[i]
-                if(custom[4]!=undefined){
-                    if(custom[4].name==objItem.name && custom[5]==0){
-                        custom[5]=1;
-                        break;
+            var objItem=item
+            var better=equip(objItem,false);
+            if(better==true){
+                if(gold<=0){
+                    game.log.push("You equipped <b>"+objItem.name+"</b> ("+objItem.value+")!");
+                }else{
+                    game.log.push("You equipped <b>"+objItem.name+"</b> ("+objItem.value+") for <b>"+gold+"</b> gold!");
+                }
+                //remove event?
+                for(var i=0;i<player.location.customs.length;i++){
+                    var custom=player.location.customs[i]
+                    if(custom[4]!=undefined){
+                        if(custom[4].name==objItem.name && custom[5]==0){
+                            custom[5]=1;
+                            break;
+                        }
                     }
                 }
+            }else{
+                player.gold+=gold;
+                game.log.push("Your "+objItem.type+" is better.")
             }
             game.updateLocations();
         }else{
@@ -384,6 +510,70 @@ function buy(gold,item,xp){
         game.log.push("You don't have enough gold.")
     }
     game.update();
+}
+
+function equip(obj,show){
+    var objItem=obj;
+    var stat=objItem.value;
+    var better=false;
+    
+    if(objItem.type=="weapon"){
+        if(player.weapon.value<stat){
+            player.weapon=objItem;
+            better=true;
+        }
+    }else{
+        if(player.armor.value<stat){
+            player.armor=objItem;
+            better=true;
+        }
+    }
+    if(show==true && better==true){
+        game.log.push("You equipped <b>"+objItem.name+"</b> ("+stat+")!");
+    }
+    return better;
+}
+
+function save(){
+    if(player.state=="free"){
+        localStorage.setItem("player",JSON.stringify(player));
+        localStorage.setItem("locations",JSON.stringify(locations));
+        localStorage.setItem("log",JSON.stringify(game.log));
+        game.log.push("Game saved.")
+        game.update();
+    }
+}
+
+function load(){
+    if(player.state=="free"){
+        if(localStorage.getItem("player")==null){
+            return false;
+        }else{
+            player=JSON.parse(localStorage.getItem("player"));
+            locations=JSON.parse(localStorage.getItem("locations"));
+            game.log=JSON.parse(localStorage.getItem("log"));
+            
+            for (var property in locations) {
+                if (locations.hasOwnProperty(property) && player.location.name == locations[property].name) {
+                    changeLocation(property,false);
+                    break;
+                }
+            }
+            game.log.push("Game loaded.")
+        }
+        
+        game.update();
+    }
+}
+
+function deleteSave(){
+    if(window.confirm("Are you sure you want to delete your save file?")==true){
+        localStorage.removeItem("player");
+        localStorage.removeItem("locations");
+        localStorage.removeItem("log");
+        game.log.push("Save file deleted.")
+        game.update();
+    }
 }
 
 

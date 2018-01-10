@@ -11,6 +11,7 @@
         </header>
         
         <main>
+            <div id="main">
             
             <div id="introduction">
                 <h2>Welcome to this game, </h2>
@@ -26,6 +27,7 @@
                 <p>Health: <span class="outerBar"><span class="innerBar healthBar"></span></span> (<span id="playerHp"></span>/<span id="playerTotalHp"></span>)</p>
                 <p>Attack: <span id="playerWeapon"></span> (<span id="playerAtk"></span>)</p>
                 <p>Defense: <span id="playerArmor"></span> (<span id="playerDef"></span>)</p>
+                <p>Luck: <span id="playerLuck"></span></p>
                 <p>Gold: <span id="playerGold"></span></p>
                 <p>Experience: <span class="outerBar"><span class="innerBar xpBar"></span></span> (<span id="playerXp"></span>/<span id="playerTotalXp"></span>)</p>
                 <p>Level: <span id="playerLevel"></span></p>
@@ -77,6 +79,17 @@
                     <br>
 
             </div>
+                <div id="levelUp" class="hide">
+                    <p>Level up! You are now level <b><span id="levelUpNum"></span></b> ! What will you upgrade?</p>
+                    <button id="levelUpHealth" class="button buttonRed" onclick="levelup('health')">Health</button>
+                    
+                    <button id="levelUpStrength" class="button buttonYellow" onclick="levelup('strength')">Strength</button>
+                    
+                    <button id="levelUpLuck" class="button buttonGreen" onclick="levelup('luck')">Luck</button>
+                </div>
+                <div id="dead" class="hide">
+                    <button id="eventRun" class="hide button buttonRed" onclick="location.reload()">Restart</button>
+                </div>
                 
         </div>
             
@@ -86,8 +99,16 @@
                     
                 </div>
             </div>
-            
-        
+            <div id="saving">
+                <button id="saveButton" class="hide button buttonBlue" onclick="save()">Save</button>
+                
+                <button id="loadButton" class="hide button buttonBlue" onclick="load()">Load</button>
+                
+                <button id="deleteButton" class="hide button buttonRed" onclick="deleteSave()">Delete your save</button>
+                
+                <br><small class="hide" id="saveMessage">Your progress will be saved automatically after you levelled up.</small>
+            </div>
+        </div>
         </main>
         
         

@@ -27,6 +27,17 @@ header{
     padding: 20px;
 }
 
+footer{
+    width: 100%;
+    display: inline-block;
+    background-color: #292929;
+    color: white;
+    padding: 10px;
+}
+
+footer a{color: lightblue;}
+footer a:visited{color: lightpink;}
+
 header h1{
     display: inline-block;
     border-bottom: 1px solid white;
@@ -74,6 +85,8 @@ main{
 #introError{
     color: red;
 }
+
+
 
 /* MAIN */
 
@@ -137,6 +150,12 @@ main{
     margin-bottom: 10px;
 }
 
+#levelUp{
+    width: 500px;
+    padding: 5px;
+    border: 3px solid black;
+}
+
 .dmg{
     color: red;
     font-weight: bold;
@@ -146,7 +165,6 @@ main{
 .hide{
     display: none;
 }
-
 
 
 
