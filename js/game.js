@@ -7,14 +7,16 @@
 // TODO: [X]Ajouter autosave
 // TODO: [X]Ajouter mort
 // TODO: [X]Ajouter types of events (gold, item, key)
-// TODO: []Changer arme/armure pour ajouter type
-// TODO: []Ajouter drop aux ennemis
+// TODO: [X]Changer arme/armure pour ajouter type
+// TODO: [X]Ajouter drop aux ennemis
+// TODO: []Ajouter enemies qui meurent après une fois
 // TODO: []Ajouter Contenu
 
 //CONSTANTS
 var fadingTime=500;
 
 var game={
+    version:0.5,
     state:"introduction",
     log:[],
     updateObj:undefined,
@@ -248,10 +250,14 @@ function explore(){
             }
         }
         if(event!=undefined){
-            if(event[0]=="enemy"){
+            if(event[0]=="enemy" || event[0]=="unique"){
                 $("#eventAttack,#eventRun,#hpFirstAll,#hpSecondAll").removeClass("hide");
                 player.state="battle";
                 player.enemy=event[1];
+                if(event[0]=="unique"){
+                    
+                    player.enemy.unique=player.location;
+                }
                 
                 game.log.push("You have encountered <b>"+event[1].name+"</b>!");
                 enemyDead=false;
@@ -285,20 +291,31 @@ function attack(){
         var variableDmg=Math.ceil(ran(-player.weapon.value/4,player.weapon.value/4));
         
         var dmg=Math.ceil(variableDmg+player.weapon.value+player.strength)-player.enemy.def;
-        if(dmg<0){dmg=0;}
+        if(dmg<=0){dmg=1;}
         var playerDead=false;
         player.enemy.hp-=dmg;
         if(player.enemy.hp<=0 && enemyDead==false){
             //defeated
             enemyDead=true;
+            
             //random xp/gold
             var randXp=ran(-player.enemy.xp/4,player.enemy.xp/4);
             var tempXp=Math.ceil(randXp+(player.enemy.xp*(player.luck+100)/100));
+            
+            if(player.enemy.xp==0){
+                tempXp=0;
+            }
+            
             if(tempXp<0){
                 tempXp=0;
             }
             var randGold=ran(-player.enemy.gold/4,player.enemy.gold/4);
             var tempGold=Math.ceil(randGold+(player.enemy.gold*(player.luck+100)/100));
+            
+            if(player.enemy.gold==0){
+                tempGold=0;
+            }
+            
             if(tempGold<0){
                 tempGold=0;
             }
@@ -331,6 +348,21 @@ function attack(){
             
             
             $("#eventActive").fadeOut(fadingTime,function(){
+                if(player.enemy.unique!=undefined){
+                    //dead unique
+                    var locationUnique=player.enemy.unique;
+                    
+                    for(var i=0;i<player.location.events.length;i++){
+                        var event=player.location.events[i][1];
+                        if(event==player.enemy){
+                            //destroy enemy
+                            player.location.events.splice(i,1);
+                        }
+                    }
+                    
+                    
+                }
+                    
                 player.enemy.hp=player.enemy.totalHp;
                 if(player.state!="level"){
                     player.state="free";
@@ -344,7 +376,10 @@ function attack(){
             //enemy attack
             var variableEneDmg=Math.ceil(ran(-player.enemy.atk/4,player.enemy.atk/4));
             var eneDmg=Math.ceil((variableEneDmg+player.enemy.atk)-player.armor.value);
-            if(eneDmg<0){eneDmg=0;}
+            
+            if(eneDmg<=0){eneDmg=1;}
+            if(player.enemy.atk==0){eneDmg=0;}
+            
             player.hp-=eneDmg;
             if(player.hp<=0){
                 //defeated
@@ -378,8 +413,9 @@ function run(){
     $("#eventActive").fadeOut(fadingTime,function(){
         player.enemy.hp=player.enemy.totalHp;
         player.state="free";
+        var goldLost=0;
         if(player.gold>0){
-            var goldLost=Math.ceil(player.gold*(0.2-(player.luck/200)));
+            goldLost=Math.ceil(player.gold*(0.2-(player.luck/200)));
             player.gold-=goldLost;
         }
         
@@ -539,6 +575,7 @@ function save(){
         localStorage.setItem("player",JSON.stringify(player));
         localStorage.setItem("locations",JSON.stringify(locations));
         localStorage.setItem("log",JSON.stringify(game.log));
+        localStorage.setItem("version",game.version);
         game.log.push("Game saved.")
         game.update();
     }
@@ -549,17 +586,24 @@ function load(){
         if(localStorage.getItem("player")==null){
             return false;
         }else{
-            player=JSON.parse(localStorage.getItem("player"));
-            locations=JSON.parse(localStorage.getItem("locations"));
-            game.log=JSON.parse(localStorage.getItem("log"));
-            
-            for (var property in locations) {
-                if (locations.hasOwnProperty(property) && player.location.name == locations[property].name) {
-                    changeLocation(property,false);
-                    break;
+            var version=(localStorage.getItem("version"));
+            if(version!=game.version){
+                game.log.push("Game <b>not</b> loaded, your save file is from an older version.")
+            }else{
+                player=JSON.parse(localStorage.getItem("player"));
+                locations=JSON.parse(localStorage.getItem("locations"));
+                game.log=JSON.parse(localStorage.getItem("log"));
+
+
+                for (var property in locations) {
+                    if (locations.hasOwnProperty(property) && player.location.name == locations[property].name) {
+                        changeLocation(property,false);
+                        break;
+                    }
                 }
+                game.log.push("Game loaded.")
             }
-            game.log.push("Game loaded.")
+            
         }
         
         game.update();

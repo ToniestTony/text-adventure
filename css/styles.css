@@ -73,6 +73,9 @@ main{
 .buttonGreen{background-color: #4dd03c;}
 .buttonGreen:hover{background-color: #226a19;}
 
+.buttonYellow{background-color: #ffdd23;}
+.buttonYellow:hover{background-color: #b1970c;}
+
 .buttonRed{background-color: #ff3131;}
 .buttonRed:hover{background-color: #b10909;}
 
@@ -164,6 +167,10 @@ main{
 
 .hide{
     display: none;
+}
+
+#saving{
+    margin-bottom: 50px;
 }
 
 
