@@ -13,7 +13,7 @@ h2{
 }
 
 p,label{
-    font-size: 20px;
+    font-size: 16px;
 }
 
 body{
@@ -64,7 +64,7 @@ main{
     background-color: #2aa0f7;
     border: 3px solid black;
     padding: 6px;
-    font-size: 20px;
+    font-size: 16px;
 }
 
 .buttonBlue{background-color: #2aa0f7;}
@@ -171,6 +171,10 @@ main{
 
 #saving{
     margin-bottom: 50px;
+}
+
+#saving p{
+    font-size: 14px;
 }
 
 

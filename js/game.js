@@ -9,17 +9,24 @@
 // TODO: [X]Ajouter types of events (gold, item, key)
 // TODO: [X]Changer arme/armure pour ajouter type
 // TODO: [X]Ajouter drop aux ennemis
-// TODO: []Ajouter enemies qui meurent après une fois
+// TODO: [X]Ajouter enemies qui meurent après une fois
+// TODO: [X]Afficher version du jeu, log et version de la save
+// TODO: []Ajouter potions vie
+// TODO: [X]Ajouter scroll aux locations
 // TODO: []Ajouter Contenu
 
 //CONSTANTS
 var fadingTime=500;
 
 var game={
-    version:0.5,
+    version:0.6,
+    file:"No save file.",
+    versionLog:"-Locations can be scrolled (5 shown max)",
     state:"introduction",
     log:[],
     updateObj:undefined,
+    firstShown:0,
+    maxShown:5,
     init:function(){
         //initialize
         this.updateLocations();
@@ -82,6 +89,10 @@ var game={
         //update location text
         id("locationName1",capitalize(player.location.name))
         id("locationDesc",capitalize(player.location.description))
+        
+        id("savingLatest",game.version);
+        id("savingLog",game.versionLog);
+        id("savingFile",game.file);
         
         var logs="";
         while(game.log.length>6){
@@ -187,19 +198,71 @@ var game={
         //locations
         $("#locationList").html("");
         
-        var locked=false;
+        var locked=true;
+        var numberShown=0;
+        var numberCount=0;
+        var totalProperty=0;
+        var locked1=false;
         
         for (var property in locations) {
-            if (locations.hasOwnProperty(property) && player.location!=locations[property] && locked==false) {
+            if (locations.hasOwnProperty(property) && player.location!=locations[property] && locked1==false){
                 if(locations[property].level>player.level){
+                 locked1=true;   
+                }
+                //calculate total number of visitable locations
+                totalProperty++;
+            }
+        }
+        
+        //first shown location restricted between 0 and max
+        if(game.firstShown<0){game.firstShown=0;}
+        if(game.firstShown>totalProperty-game.maxShown){game.firstShown=totalProperty-game.maxShown;}
+        
+        //loop every locations
+        for (var property in locations) {
+            if(numberCount>=game.firstShown){
+                locked=false;
+                numberCount=-999;
+            }
+            if (locations.hasOwnProperty(property) && player.location!=locations[property] && locked==false && numberShown<game.maxShown) {
+                if(locations[property].level>player.level){
+                    //add locked button
                     locked=true;
                     $("#locationList").append(
                     "<button class='locked button buttonGreen'>"+capitalize(locations[property].name)+" (Locked until level "+locations[property].level+")</button><br>")
                 }else{
+                    //add normal location button
                     $("#locationList").append(
                     "<button class='button buttonGreen' onclick='changeLocation(\""+property+"\")'>"+capitalize(locations[property].name)+"</button><br>")
+                    
                 }
+                //calculate number of shown buttons
+                numberShown++;
                 
+                
+            }
+            if (locations.hasOwnProperty(property) && player.location!=locations[property]){
+                //calculate number of locations before the first one shown
+                numberCount++;
+            }
+            
+            
+        }
+        
+        //show the buttons up and down
+        if(numberShown>=game.maxShown){
+            //if first shown is more than 0
+            if(game.firstShown>0){
+                $("#changeUp").removeClass("hide");
+            }else{
+                $("#changeUp").addClass("hide");
+            }
+            
+            //if first shown isn't at the end of the list
+            if(game.firstShown+game.maxShown<totalProperty){
+                $("#changeDown").removeClass("hide");
+            }else{
+                $("#changeDown").addClass("hide");
             }
         }
         
@@ -476,7 +539,11 @@ function introVerify(){
         player.name=name;
         
         $("#playerName").html(capitalize(name));
-        fadeOutInDiv("introduction","player,#location,#event,#change,#saveButton,#loadButton,#saveMessage",fadingTime)
+        fadeOutInDiv("introduction","player,#location,#event,#change,#saveButton,#loadButton,#savingInfo,#saveMessage",fadingTime)
+        
+        if(localStorage.getItem("player")!=null){
+            game.file=(localStorage.getItem("version"));
+        }
 
         game.updateText();
         game.updateObj=setInterval(game.update.bind(game),1000);
@@ -576,6 +643,7 @@ function save(){
         localStorage.setItem("locations",JSON.stringify(locations));
         localStorage.setItem("log",JSON.stringify(game.log));
         localStorage.setItem("version",game.version);
+        game.file=game.version;
         game.log.push("Game saved.")
         game.update();
     }
@@ -584,25 +652,29 @@ function save(){
 function load(){
     if(player.state=="free"){
         if(localStorage.getItem("player")==null){
-            return false;
+            game.log.push("No save file to load.")
         }else{
-            var version=(localStorage.getItem("version"));
-            if(version!=game.version){
-                game.log.push("Game <b>not</b> loaded, your save file is from an older version.")
-            }else{
-                player=JSON.parse(localStorage.getItem("player"));
-                locations=JSON.parse(localStorage.getItem("locations"));
-                game.log=JSON.parse(localStorage.getItem("log"));
+            game.file=(localStorage.getItem("version"));
+            
+            
+            player=JSON.parse(localStorage.getItem("player"));
+            locations=JSON.parse(localStorage.getItem("locations"));
+            game.log=JSON.parse(localStorage.getItem("log"));
 
 
-                for (var property in locations) {
-                    if (locations.hasOwnProperty(property) && player.location.name == locations[property].name) {
-                        changeLocation(property,false);
-                        break;
-                    }
+            for (var property in locations) {
+                if (locations.hasOwnProperty(property) && player.location.name == locations[property].name) {
+                    changeLocation(property,false);
+                    break;
                 }
+            }
+            
+            if(game.file!=game.version){
+                game.log.push("Game loaded, your save file is from an older version.")
+            }else{
                 game.log.push("Game loaded.")
             }
+                
             
         }
         
@@ -615,6 +687,8 @@ function deleteSave(){
         localStorage.removeItem("player");
         localStorage.removeItem("locations");
         localStorage.removeItem("log");
+        localStorage.removeItem("version");
+        game.file="No save file."
         game.log.push("Save file deleted.")
         game.update();
     }

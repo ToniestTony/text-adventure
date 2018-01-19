@@ -95,11 +95,28 @@
             
             <div class="hide" id="change">
                 <h3>Change location:</h3>
+                
+                
+                
+                <button id="changeUp" class="hide button buttonBlue" onclick="game.firstShown--;game.updateLocations()">^</button>
+                
                 <div id="locationList">
                     
                 </div>
+                
+                <button id="changeDown" class="hide button buttonBlue" onclick="game.firstShown++;game.updateLocations()">v</button>
+                
+                
+                
             </div>
             <div id="saving">
+                
+                <div id="savingInfo" class="hide">
+                <p>Latest version: <span id="savingLatest"></span></p>
+                <p id="savingLog"></p>
+                <p>Save file version: <span id="savingFile"></span></p>
+                </div>
+                
                 <button id="saveButton" class="hide button buttonBlue" onclick="save()">Save</button>
                 
                 <button id="loadButton" class="hide button buttonBlue" onclick="load()">Load</button>
