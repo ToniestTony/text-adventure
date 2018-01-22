@@ -11,17 +11,18 @@
 // TODO: [X]Ajouter drop aux ennemis
 // TODO: [X]Ajouter enemies qui meurent après une fois
 // TODO: [X]Afficher version du jeu, log et version de la save
-// TODO: []Ajouter potions vie
+// TODO: [X]Ajouter potions vie
 // TODO: [X]Ajouter scroll aux locations
+// TODO: [X]Fix customs showing up with events
 // TODO: []Ajouter Contenu
 
 //CONSTANTS
 var fadingTime=500;
 
 var game={
-    version:0.6,
+    version:0.7,
     file:"No save file.",
-    versionLog:"-Locations can be scrolled (5 shown max)",
+    versionLog:"-First public release<br>-New areas<br>-More content on the way!",
     state:"introduction",
     log:[],
     updateObj:undefined,
@@ -106,11 +107,24 @@ var game={
         
         id("locationName2",player.location.name)
         $("levelUp").addClass("hide");
+        
+        //healing stuff
+        $("#heal").html("");
+        if(player.items.length>0){
+            //show healing items
+            
+            for(var i=0;i<player.items.length;i++){
+                var item=player.items[i];
+                $("#heal").append(
+                "<button class='button buttonRed' onclick='heal(0,"+item.value+",\""+item.name+"\")'>Use "+item.name+" ("+item.value+" hp) ("+item.quantity+" left)</button><br>")
+            }
+        }
+        
         //event
         if(player.state=="battle"){
             
             $("#eventActive").css("display","inline-block");
-            $("#exploreButton").addClass("hide");
+            $("#exploreButton,#eventsList").addClass("hide");
             
             id("eventTitle","Fighting "+player.enemy.name);
             
@@ -134,7 +148,7 @@ var game={
         }else if(player.state=="free"){
             $("#eventActive").css("display","none");
             if(player.location.events!=undefined){
-                $("#exploreButton").removeClass("hide");
+                $("#exploreButton,#eventsList").removeClass("hide");
             }else{
                 $("#exploreButton").addClass("hide");
             }
@@ -144,7 +158,7 @@ var game={
             }
             $("#levelUp").removeClass("hide");
             $("#levelUpNum").html(player.level);
-            $("#exploreButton,#eventsList,#locationList,#change,#exploreButton").addClass("hide");
+            $("#exploreButton,#heal,#eventsList,#locationList,#change,#exploreButton").addClass("hide");
             $("#change").hide();
         }else{
             $("#levelUp").addClass("hide");
@@ -291,6 +305,9 @@ var player={
         name:"Leather clothes",
         value:1,
     },
+    
+    items:[
+    ],
     
     gold:5,
     
@@ -527,7 +544,7 @@ function levelup(attr){
     player.hp=player.totalHp;
     player.state="free";
     $("#levelUp").addClass("hide");
-    $("#exploreButton,#eventsList,#locationList,#change,#exploreButton").removeClass("hide");
+    $("#exploreButton,#heal,#eventsList,#locationList,#change").removeClass("hide");
     $("#change").show();
     save();
 }
@@ -539,7 +556,7 @@ function introVerify(){
         player.name=name;
         
         $("#playerName").html(capitalize(name));
-        fadeOutInDiv("introduction","player,#location,#event,#change,#saveButton,#loadButton,#savingInfo,#saveMessage",fadingTime)
+        fadeOutInDiv("introduction","player,#location,#event,#change,#saveButton,#loadButton,#savingInfo,#saveMessage,#heal",fadingTime)
         
         if(localStorage.getItem("player")!=null){
             game.file=(localStorage.getItem("version"));
@@ -566,11 +583,27 @@ function talk(ans){
     game.update();
 }
 
-function heal(gold,hp){
+function heal(gold,hp,name){
     if(player.gold>=gold){
         player.gold-=gold;
-        player.hp+=hp;
-        game.log.push("You healed <span class='dmg'>"+hp+"</span> hp for <b>"+gold+"</b> gold!")
+        
+        if(name!=undefined){
+            for(var i=0;i<player.items.length;i++){
+                if(player.items[i].name==name){
+                    player.hp+=hp;
+                    if(player.items[i].quantity>1){
+                        player.items[i].quantity--;
+                    }else{
+                        player.items.splice(i,1);
+                    }
+                    game.log.push("You used <b>"+name+"</b> and healed <span class='dmg'>"+hp+"</span> hp!")
+                }
+            }
+        }else{
+            player.hp+=hp;
+            game.log.push("You healed <span class='dmg'>"+hp+"</span> hp for <b>"+gold+"</b> gold!")
+        }
+        
     }else{
         game.log.push("You don't have enough gold.")
     }
@@ -584,11 +617,15 @@ function buy(gold,item,xp){
         if(item!=undefined){
             var objItem=item
             var better=equip(objItem,false);
+            var val=objItem.value;
+            if(objItem.type=="heal"){
+                val+=" hp";
+            }
             if(better==true){
                 if(gold<=0){
-                    game.log.push("You equipped <b>"+objItem.name+"</b> ("+objItem.value+")!");
+                    game.log.push("You equipped <b>"+objItem.name+"</b> ("+val+")!");
                 }else{
-                    game.log.push("You equipped <b>"+objItem.name+"</b> ("+objItem.value+") for <b>"+gold+"</b> gold!");
+                    game.log.push("You equipped <b>"+objItem.name+"</b> ("+val+") for <b>"+gold+"</b> gold!");
                 }
                 //remove event?
                 for(var i=0;i<player.location.customs.length;i++){
@@ -620,12 +657,32 @@ function equip(obj,show){
     var stat=objItem.value;
     var better=false;
     
+    if(objItem.type=="heal"){
+        better=true;
+        var found=false;
+        for(var i=0;i<player.items.length;i++){
+            var item=player.items[i];
+            if(item.name==objItem.name){
+                found=true;
+                item.quantity++;
+            }
+        }
+        if(found==false){
+            player.items.push({
+                type:"heal",
+                name:objItem.name,
+                value:objItem.value,
+                quantity:objItem.quantity
+            })
+        }
+    }
+    
     if(objItem.type=="weapon"){
         if(player.weapon.value<stat){
             player.weapon=objItem;
             better=true;
         }
-    }else{
+    }else if(objItem.type=="armor"){
         if(player.armor.value<stat){
             player.armor=objItem;
             better=true;
