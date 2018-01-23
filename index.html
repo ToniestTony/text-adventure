@@ -18,7 +18,9 @@
                 <br>
                 <label for="introName">What is your name?</label>
                 <input id="introName" name="introName" type="text">
-                <button class="button buttonBlue" onclick="introVerify()">Submit</button><br>
+                <button class="button buttonBlue" onclick="introVerify()">Normal mode</button><br>
+                <button class="button buttonRed" onclick="introVerify('permadeath')">Permanent Death mode</button><br>
+                <button id="introLoad" class="hide button buttonBlue" onclick="introVerify('load')">Load save file</button><br>
                 <span id="introError"></span>
             </div>
             
@@ -31,6 +33,7 @@
                 <p>Gold: <span id="playerGold"></span></p>
                 <p>Experience: <span class="outerBar"><span class="innerBar xpBar"></span></span> (<span id="playerXp"></span>/<span id="playerTotalXp"></span>)</p>
                 <p>Level: <span id="playerLevel"></span></p>
+                <p>Mode: <span id="playerMode"></span></p>
             </div>
             
             <div class="hide" id="location">
@@ -143,6 +146,7 @@
         
     <script src="js/enemy.js"></script>
     <script src="js/location.js"></script>
+    <script src="js/generator.js"></script>
     <script src="js/game.js"></script>
     
     </body>

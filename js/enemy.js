@@ -59,6 +59,8 @@ var enemies={
     //plain and slime kingdom
     slime:new Enemy("a slime","A slimey creature",5,2,0,2,2,[{item:items.slimeHat,chance:20},{item:items.slimeArmor,chance:10}]),
     
+    bigSlime:new Enemy("a big slime","A big slimey creature",15,3,1,4,4,[{item:items.slimeHat,chance:60},{item:items.slimeArmor,chance:30}]),
+    
     redSlime:new Enemy("a red slime","A red slimey creature",10,2,0,3,2,[{item:items.slimeHat,chance:20},{item:items.slimeArmor,chance:10}]),
     
     angrySlime:new Enemy("an angry slime","A slimey creature that's angry",5,4,0,4,2,[{item:items.slimeHat,chance:20},{item:items.slimeArmor,chance:10}]),

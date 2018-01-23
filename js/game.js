@@ -14,15 +14,21 @@
 // TODO: [X]Ajouter potions vie
 // TODO: [X]Ajouter scroll aux locations
 // TODO: [X]Fix customs showing up with events
+// TODO: [X]Ajouter crits (et scale avec luck)
+// TODO: [X]Permadeath mode
+// TODO: [X]Loader on main screen
+// TODO: [X]Bosses appear message
+// TODO: []Generator
 // TODO: []Ajouter Contenu
 
 //CONSTANTS
 var fadingTime=500;
 
 var game={
-    version:0.7,
+    version:0.8,
+    permadeath:false,
     file:"No save file.",
-    versionLog:"-First public release<br>-New areas<br>-More content on the way!",
+    versionLog:"-Critical added, more luck = more crits<br>-Permadeath mode<br>-Load save file on startup<br>-Boss are more clear",
     state:"introduction",
     log:[],
     updateObj:undefined,
@@ -30,6 +36,7 @@ var game={
     maxShown:5,
     init:function(){
         //initialize
+        generate();
         this.updateLocations();
     },
     
@@ -87,6 +94,15 @@ var game={
         id("playerXp",player.xp)
         id("playerTotalXp",player.totalXp)
         
+        var mode="Normal";
+        if(game.permadeath==true){
+            mode="Permanent Death";
+            $("#playerMode").addClass("dmg");
+        }else{
+            $("#playerMode").removeClass("dmg");
+        }
+        id("playerMode",mode)
+        
         //update location text
         id("locationName1",capitalize(player.location.name))
         id("locationDesc",capitalize(player.location.description))
@@ -121,7 +137,9 @@ var game={
         }
         
         //event
-        if(player.state=="battle"){
+        if(player.state=="dead"){
+            $("#eventActive").css("display","none");
+        }else if(player.state=="battle"){
             
             $("#eventActive").css("display","inline-block");
             $("#exploreButton,#eventsList").addClass("hide");
@@ -339,7 +357,12 @@ function explore(){
                     player.enemy.unique=player.location;
                 }
                 
-                game.log.push("You have encountered <b>"+event[1].name+"</b>!");
+                if(event[0]=="enemy"){
+                    game.log.push("You have encountered <b>"+event[1].name+"</b>!");
+                }else if(event[0]=="unique"){
+                    game.log.push("You have encountered <b>"+event[1].name+"</b> (<b>BOSS</b>)!");
+                }
+                
                 enemyDead=false;
                 fadeInDiv("eventActive",fadingTime);
             }else if(event[0]=="gold"){
@@ -371,6 +394,16 @@ function attack(){
         var variableDmg=Math.ceil(ran(-player.weapon.value/4,player.weapon.value/4));
         
         var dmg=Math.ceil(variableDmg+player.weapon.value+player.strength)-player.enemy.def;
+        
+        var critical=false;
+        
+        if(ran(0,100)<=(10+player.luck)){
+            critical=true;
+            dmg=Math.ceil((player.weapon.value+player.strength)*2)-player.enemy.def;
+        }
+        
+        
+        
         if(dmg<=0){dmg=1;}
         var playerDead=false;
         player.enemy.hp-=dmg;
@@ -467,7 +500,11 @@ function attack(){
             }
             
             if(!playerDead){
-                game.log.push("You dealt <span class='dmg'>"+dmg+"</span> damage to <b>"+player.enemy.name+"</b>.")
+                if(critical==false){
+                    game.log.push("You dealt <span class='dmg'>"+dmg+"</span> damage to <b>"+player.enemy.name+"</b>.")
+                }else{
+                    game.log.push("<b>CRITICAL!</b> You dealt <span class='dmg'>"+dmg+"</span> damage to <b>"+player.enemy.name+"</b>.")
+                }
                 game.log.push("You received <span class='dmg'>"+eneDmg+"</span> damage!")
             }else{
                 //player dead
@@ -476,9 +513,13 @@ function attack(){
             
                 player.enemy.hp=player.enemy.totalHp;
                 player.state="dead";
+                $("#eventActive").css("display","none");
                 $("#change").hide();
                 $("#dead").removeClass("hide");
                 $("#exploreButton").hide();
+                if(game.permadeath==true){
+                    deleteSave(false);
+                }
                 game.update();
             }
         }
@@ -550,8 +591,14 @@ function levelup(attr){
 }
 
 
-function introVerify(){
+function introVerify(mode){
     var name= $("#introName").val();
+    if(mode!=undefined){
+            if(mode=="load"){
+               var tempPlayer=JSON.parse(localStorage.getItem("player"));
+                name=tempPlayer.name;
+            }
+    }
     if(verifierString(name)){
         player.name=name;
         
@@ -560,6 +607,15 @@ function introVerify(){
         
         if(localStorage.getItem("player")!=null){
             game.file=(localStorage.getItem("version"));
+        }
+        
+        if(mode!=undefined){
+            if(mode=="load"){
+                load();
+            }
+            if(mode=="permadeath"){
+                game.permadeath=true;
+            }
         }
 
         game.updateText();
@@ -706,6 +762,10 @@ function save(){
     }
 }
 
+if(localStorage.getItem("player")!=null){
+    $("#introLoad").removeClass("hide");
+}
+
 function load(){
     if(player.state=="free"){
         if(localStorage.getItem("player")==null){
@@ -739,8 +799,16 @@ function load(){
     }
 }
 
-function deleteSave(){
-    if(window.confirm("Are you sure you want to delete your save file?")==true){
+function deleteSave(choose){
+    if(choose!=undefined && choose==false){
+        localStorage.removeItem("player");
+        localStorage.removeItem("locations");
+        localStorage.removeItem("log");
+        localStorage.removeItem("version");
+        game.file="No save file."
+        game.log.push("Save file deleted.")
+        game.update();
+    }else if(window.confirm("Are you sure you want to delete your save file?")==true){
         localStorage.removeItem("player");
         localStorage.removeItem("locations");
         localStorage.removeItem("log");
