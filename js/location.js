@@ -29,7 +29,7 @@ var locations={
         //["gold","You found <b>10</b> gold on the ground!",60,10],
         ["custom","You have found a key, and you unlocked the small house in the village.",10,"village","A small house (locked)",["A small house","buy",0,0,items.villageSword,0]],
         //["unique",enemies.woodenChest,100],
-        ["enemy",enemies.slime,60],
+        ["enemy",enemies.slime,100],
         ["enemy",enemies.redSlime,80],
         ["enemy",enemies.angrySlime,95],
         ["enemy",enemies.goldenSlime,100]

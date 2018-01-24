@@ -29,7 +29,20 @@ var locations={
     ]),
     */
 
-var generator={
+
+var genEnemies={
+    //name,desc,hp,atk,def,xp,gold,loot
+    //enemy:new Enemy("name","desc",hp,atk,def,xp,gold),
+    //enemy:new Enemy("name","desc",hp,atk,def,xp,gold,[{item:itemObj,chance:num}]),
+    
+    //plain and slime kingdom
+    //name,desc,atk,def,xp,gold,loot
+    //0->4, 0 is min, 2 is middle, 4 is max
+    slime:new Enemy("a slime","A slimey creature",1,1,0,1,1,[{item:items.slimeHat,chance:20},{item:items.slimeArmor,chance:10}]),
+}
+
+//gen short for generator
+var gen={
     normal:{
         names:[
             //reference name, actual name, desc
@@ -50,12 +63,26 @@ var generator={
             [enemies.bigSlime,20],
             [enemies.kingSlime,10],
         ],
+        weapons:[
+            
+        ],
+        
         enemies:[
-            //enemy, appearance %
-            [enemies.slime,60],
+            //enemy, appearance %, drop
+            //ref,name,desc,hp,atk,def,xp,gold,%,loot
+            //loot=type,name,val(0->4),chance(%)
+            //stats are scalable from 0->4, 0 is min, 4 is max
+            ["a slime","a slimey creature",1,1,0,1,1,60,[
+                ["armor","Slime hat",2,50],
+                ["armor","Slime armor",3,25],
+            ]],
+            ["a red slime","a red slimey creature",3,1,0,2,1,30],
+            ["a angry slime","a angry slimey creature",1,2,0,2,1,30],
+            ["a golden slime","a golden slimey creature",2,1,2,1,4,10],
+            /*[enemies.slime,60],
             [enemies.redSlime,30],
             [enemies.angrySlime,30],
-            [enemies.goldenSlime,10],
+            [enemies.goldenSlime,10],*/
         ],
         events:[],
     },
@@ -99,8 +126,8 @@ function generate(){
     
     //get themes
     var themes=[];
-    for (var property in generator) {
-        if (generator.hasOwnProperty(property)){
+    for (var property in gen) {
+        if (gen.hasOwnProperty(property)){
             themes.push(property.toString());
         }
     }
@@ -147,16 +174,16 @@ function generate(){
         var triesCpt=0;
         var maxTries=99;
         
-        var randName=generator[theme].names[ran(0,generator[theme].names.length-1)];
+        var randName=gen[theme].names[ran(0,gen[theme].names.length-1)];
         if(isShop){
-            randName=generator[theme].shopNames[ran(0,generator[theme].shopNames.length-1)];
+            randName=gen[theme].shopNames[ran(0,gen[theme].shopNames.length-1)];
         }
         
         while(generatedLocations[randName[0]]!=undefined && triesCpt<=maxTries){
-            var randName=generator[theme].names[ran(0,generator[theme].names.length-1)];
+            var randName=gen[theme].names[ran(0,gen[theme].names.length-1)];
         
             if(isShop){
-                randName=generator[theme].shopNames[ran(0,generator[theme].shopNames.length-1)];
+                randName=gen[theme].shopNames[ran(0,gen[theme].shopNames.length-1)];
             }
             triesCpt++;
         }
@@ -174,24 +201,45 @@ function generate(){
             var generatedEnemies=[];
             
             var listEnemies=[];
-            for(var cpt=0;cpt<generator[theme].enemies.length;cpt++){
-                listEnemies.push(generator[theme].enemies[cpt])
+            for(var cpt=0;cpt<gen[theme].enemies.length;cpt++){
+                listEnemies.push(gen[theme].enemies[cpt])
             }
             
             var percent=0;
             
-            for(var cpt=0;cpt<generator[theme].enemies.length;cpt++){
+            for(var cpt=0;cpt<gen[theme].enemies.length;cpt++){
                 if(listEnemies.length>0){
-                    var currEnemy=listEnemies[ran(0,listEnemies.length-1)]
-                    listEnemies.splice(listEnemies.indexOf(currEnemy),1);
-                
-                
-                    percent+=currEnemy[1];
+                    //ce for currEnemy
+                    var ce=listEnemies[ran(0,listEnemies.length-1)]
+                    listEnemies.splice(listEnemies.indexOf(ce),1);
+                    
+                    //name,desc,hp,atk,def,xp,gold
+                    var cName=ce[0];
+                    var cDesc=ce[1];
+                    var cHp=ce[2];
+                    var cAtk=ce[3];
+                    var cDef=ce[4];
+                    var cXp=ce[5];
+                    var cGold=ce[6];
+                    var cPercent=ce[7];
+                    
+                    var cLoot=undefined;
+                    if(ce[8]!=undefined){
+                        cLoot=[];
+                        for(var lootCpt=0;lootCpt<ce[8].length;lootCpt++){
+                            cLoot.push({item:new Item(ce[8][lootCpt][0],ce[8][lootCpt][1],ce[8][lootCpt][2]),chance:ce[8][lootCpt][3]});
+                        }
+                    }
+                    var objEnemy=new Enemy(cName,cDesc,cHp,cAtk,cDef,cXp,cGold,cLoot)
+                    
+                    percent+=cPercent;
                     if(percent>100){percent=100}
+                    
+                    
 
                     generatedEnemies.push([
                         "enemy",
-                        currEnemy[0],
+                        objEnemy,
                         percent
                     ]);
 
@@ -214,4 +262,8 @@ function generate(){
     }
     
     console.log(generatedLocations)
+}
+
+function calcVal(value,level){
+    var finalValue=value*level;
 }
