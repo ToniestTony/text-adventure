@@ -135,7 +135,7 @@ function generate(){
     
     //main loop
     var levelRequired=0;
-    var difficulty=0;
+    var difficulty=1;
     var theme=themes[0];
     
     
@@ -216,11 +216,16 @@ function generate(){
                     //name,desc,hp,atk,def,xp,gold
                     var cName=ce[0];
                     var cDesc=ce[1];
-                    var cHp=ce[2];
-                    var cAtk=ce[3];
-                    var cDef=ce[4];
-                    var cXp=ce[5];
-                    var cGold=ce[6];
+                    
+                    var cHp=Math.ceil((5+(difficulty*4.6))*((ce[2]+1)/5));
+                    
+                    var cAtk=Math.ceil((4+(difficulty*0.7))*((ce[3]+1)/5));
+                    
+                    var cDef=Math.floor((4+((difficulty-1)*0.25))*((ce[4]+1)/5));
+                    
+                    var cXp=Math.ceil((4+((difficulty-1)*3.6))*((ce[5]+1)/5));
+                    
+                    var cGold=Math.ceil((4+((difficulty-1)*2.6))*((ce[6]+1)/5));
                     var cPercent=ce[7];
                     
                     var cLoot=undefined;
