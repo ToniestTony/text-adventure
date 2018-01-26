@@ -225,7 +225,12 @@ function generate(){
                     
                     var cXp=Math.ceil((4+((difficulty-1)*3.6))*((ce[5]+1)/5));
                     
+                    if(ce[5]==0){cXp=0;}
+                    
                     var cGold=Math.ceil((4+((difficulty-1)*2.6))*((ce[6]+1)/5));
+                    
+                    if(ce[6]==0){cGold=0;}
+                    
                     var cPercent=ce[7];
                     
                     var cLoot=undefined;
