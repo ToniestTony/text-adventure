@@ -47,8 +47,11 @@ var gen={
         names:[
             //reference name, actual name, desc
             ["plains","the plains","A calm plain"],
+            ["slimePlains","the slime plains","A calm plain with slimes"],
             ["smallForest","a small forest","A small and young forest"],
-            ["hill","a small hill","A small but vast hill"],
+            ["smallFriskyForest","a small frisky forest","A small forest that is a bit cold"],
+            ["hill","a hill","A vast hill"],
+            ["smallHill","a small hill","A small but vast hill"],
         ],
         shopNames:[
             //reference name, actual name, desc
@@ -125,8 +128,11 @@ var gen={
         names:[
             //reference name, actual name, desc
             ["forest","the forest","A forest with different kind of trees."],
+            ["youngForest","the young forest","A young forest."],
             ["denseForest","the dense forest","A forest so dense that light can barely pass through it."],
+            ["denseYoungForest","the dense young forest","A dense but young forest."],
             ["forestHill","the forest on a hill","A forest on top of a large hill"],
+            ["crookedForest","the crooked forest","A forest where the trees are crooked"],
         ],
         shopNames:[
             //reference name, actual name, desc
@@ -204,8 +210,11 @@ var gen={
         names:[
             //reference name, actual name, desc
             ["swamp","the swamp","A big swamp filled with aquatic fauna and flora."],
+            ["humidForest","the humid forest","An incredibly humid forest."],
+            ["foggyLake","the foggy lake","An incredibly foggy lake."],
             ["lake","the lake","A circular lake."],
-            ["river","the river","A large river."],
+            ["river","the river","A lively river."],
+            ["largeRiver","the large river","A large river."],
         ],
         shopNames:[
             //reference name, actual name, desc
@@ -284,10 +293,12 @@ var gen={
     underground:{
         names:[
             //reference name, actual name, desc
-            ["cave","the caves","A dark connection of caves."],
+            ["cave","the caves","A connection of caves."],
+            ["darkCave","the dark caves","A dark connection of caves."],
             ["tunnels","the tunnels","A dim lighted connection of tunnels."],
             ["crevasse","the crevasse","The bottom of a large crevasse."],
             ["mineshaft","the mineshaft","An abandonned mineshaft."],
+            ["darkMineshaft","the dark mineshaft","An abandonned and dim lighted mineshaft."],
         ],
         shopNames:[
             //reference name, actual name, desc
