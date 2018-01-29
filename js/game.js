@@ -25,10 +25,10 @@
 var fadingTime=500;
 
 var game={
-    version:0.8,
+    version:1.0,
     permadeath:false,
     file:"No save file.",
-    versionLog:"-Critical added, more luck = more crits<br>-Permadeath mode<br>-Load save file on startup<br>-Boss are more clear",
+    versionLog:"-World is completely randomly generated<br>-Expect some changes soon to balance the game<br>-More biomes/variety coming soon!",
     state:"introduction",
     log:[],
     updateObj:undefined,
@@ -37,6 +37,7 @@ var game={
     init:function(){
         //initialize
         generate();
+        player.location=locations[firstLocation]
         this.updateLocations();
     },
     
@@ -305,7 +306,7 @@ var game={
 var player={
     name:"undefined",
     state:"free",
-    location:locations.village,
+    location:locations[""+firstLocation],
     enemy:undefined,
     strength:0,
     luck:0,
@@ -443,8 +444,6 @@ function attack(){
                 for(var i=0;i<player.enemy.loot.length;i++){
                     var rand=ran(0,100);
                     var loot=player.enemy.loot[i];
-                    console.log("r"+rand)
-                    console.log(loot.chance)
                     if(rand<=(loot.chance+Math.ceil(player.luck/4))){
                         //loot obtained
                         var better=equip(loot.item,false);

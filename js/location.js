@@ -13,7 +13,7 @@ var locations={
         //name,event,cost,xp gained OR hp gained,item, active (0:limited,1:unactive,2:unlimited)
         //talk,event(talk),[answer]
         ["Talk to the village elder","talk",["Good luck on your adventure!","Be careful","The small house is said to contain a weapon, I wonder where is the key."]],
-        ["Sleep at the tavern (3 gold)","heal",1,5,undefined,0],
+        ["Sleep at the tavern (3 gold)","heal",3,5,undefined,0],
         ["Buy a wooden sword (10 gold)","buy",10,0,items.woodenSword,0],
         ["Buy reinforced leather clothes (15 gold)","buy",15,0,items.reinforcedLeatherClothes,0],
         ["Buy a bronze sword (20 gold)","buy",20,0,items.bronzeSword,0],
@@ -29,7 +29,7 @@ var locations={
         //["gold","You found <b>10</b> gold on the ground!",60,10],
         ["custom","You have found a key, and you unlocked the small house in the village.",10,"village","A small house (locked)",["A small house","buy",0,0,items.villageSword,0]],
         //["unique",enemies.woodenChest,100],
-        ["enemy",enemies.slime,100],
+        ["enemy",enemies.slime,60],
         ["enemy",enemies.redSlime,80],
         ["enemy",enemies.angrySlime,95],
         ["enemy",enemies.goldenSlime,100]
