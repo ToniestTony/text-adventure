@@ -25,7 +25,7 @@
 var fadingTime=500;
 
 var game={
-    version:1.01,
+    version:1.02,
     permadeath:false,
     file:"No save file.",
     versionLog:"-World is completely randomly generated<br>-Fixed chests attacking, potions overwriting same name potions and sleeping is more effective<br>-More biomes/variety coming soon!",
