@@ -28,7 +28,7 @@ var game={
     version:1.01,
     permadeath:false,
     file:"No save file.",
-    versionLog:"-World is completely randomly generated<br>-Fixed chests attacking and potions overwriting same name potions<br>-More biomes/variety coming soon!",
+    versionLog:"-World is completely randomly generated<br>-Fixed chests attacking, potions overwriting same name potions and sleeping is more effective<br>-More biomes/variety coming soon!",
     state:"introduction",
     log:[],
     updateObj:undefined,
@@ -644,7 +644,7 @@ function heal(gold,hp,name){
         
         if(name!=undefined){
             for(var i=0;i<player.items.length;i++){
-                if(player.items[i].name==name){
+                if(player.items[i].name==name && player.items[i].value==hp){
                     player.hp+=hp;
                     if(player.items[i].quantity>1){
                         player.items[i].quantity--;
@@ -655,8 +655,14 @@ function heal(gold,hp,name){
                 }
             }
         }else{
-            player.hp+=hp;
-            game.log.push("You healed <span class='dmg'>"+hp+"</span> hp for <b>"+gold+"</b> gold!")
+            if(player.hp>=player.totalHp){
+                game.log.push("You already have max health.")
+                player.gold+=gold;
+            }else{
+                player.hp+=hp;
+                game.log.push("You healed <span class='dmg'>"+hp+"</span> hp for <b>"+gold+"</b> gold!")
+            }
+            
         }
         
     }else{

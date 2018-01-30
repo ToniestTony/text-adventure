@@ -626,10 +626,10 @@ function generate(){
             
             var healEvent=[];
             
-            var sleepPrice=Math.floor((2+(difficulty*1.5)));
-            var sleepValue=Math.ceil((3+(difficulty*1.2)));
+            var sleepPrice=Math.floor((3+(difficulty*1.5)));
+            var sleepValue=Math.ceil((6+(difficulty*3)));
             
-            var healNames=["Sleep here","Rent a bed","Rent a room","Sleep at this place","Sleep at "+randName]
+            var healNames=["Sleep here","Rent a bed","Rent a room","Sleep at this place","Sleep at "+randName[1]]
             
             healEvent[0]=healNames[ran(0,healNames.length-1)]+" ("+sleepPrice+" gold)";
             healEvent[1]="heal";
