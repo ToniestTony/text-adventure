@@ -25,10 +25,10 @@
 var fadingTime=500;
 
 var game={
-    version:1.0,
+    version:1.01,
     permadeath:false,
     file:"No save file.",
-    versionLog:"-World is completely randomly generated<br>-Expect some changes soon to balance the game<br>-More biomes/variety coming soon!",
+    versionLog:"-World is completely randomly generated<br>-Fixed chests attacking and potions overwriting same name potions<br>-More biomes/variety coming soon!",
     state:"introduction",
     log:[],
     updateObj:undefined,
@@ -717,7 +717,7 @@ function equip(obj,show){
         var found=false;
         for(var i=0;i<player.items.length;i++){
             var item=player.items[i];
-            if(item.name==objItem.name){
+            if(item.name==objItem.name && item.value==objItem.value){
                 found=true;
                 item.quantity++;
             }

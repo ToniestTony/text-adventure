@@ -518,8 +518,10 @@ function generate(){
                     var cHp=Math.ceil((5+(difficulty*4.6))*((ce[2]+1)/5));
                     
                     var cAtk=Math.ceil((4+(difficulty*0.75))*((ce[3]+1)/5));
+                    if(ce[3]==0){cAtk=0;}
                     
                     var cDef=Math.floor((4+((difficulty-1)*0.25))*((ce[4]+1)/5));
+                    if(ce[4]==0){cDef=0;}
                     
                     var cXp=Math.ceil((4+((difficulty-1)*3.6))*((ce[5]+1)/5));
                     
