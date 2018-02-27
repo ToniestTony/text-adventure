@@ -25,10 +25,10 @@
 var fadingTime=500;
 
 var game={
-    version:1.02,
+    version:1.05,
     permadeath:false,
     file:"No save file.",
-    versionLog:"-World is completely randomly generated<br>-Fixed chests attacking, potions overwriting same name potions and sleeping is more effective<br>-More biomes/variety coming soon!",
+    versionLog:"-More biomes<br>-Difficulty increases more-<br>-New Game + once high enough level<br>-Bosses will be more diverse",
     state:"introduction",
     log:[],
     updateObj:undefined,
@@ -418,6 +418,8 @@ function attack(){
             
             if(player.enemy.xp==0){
                 tempXp=0;
+            }else if(tempXp<=0){
+                tempXp=1;
             }
             
             if(tempXp<0){
@@ -428,6 +430,8 @@ function attack(){
             
             if(player.enemy.gold==0){
                 tempGold=0;
+            }else if(tempGold<=0){
+                tempGold=1;
             }
             
             if(tempGold<0){
