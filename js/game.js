@@ -18,17 +18,18 @@
 // TODO: [X]Permadeath mode
 // TODO: [X]Loader on main screen
 // TODO: [X]Bosses appear message
-// TODO: []Generator
-// TODO: []Ajouter Contenu
+// TODO: [X]Generator
+// TODO: [X]Ajouter Contenu
 
 //CONSTANTS
-var fadingTime=500;
+var initialFadingTime=200;
+var fadingTime=initialFadingTime;
 
 var game={
-    version:1.05,
+    version:1.06,
     permadeath:false,
     file:"No save file.",
-    versionLog:"-More biomes<br>-Difficulty increases more-<br>-New Game + once high enough level<br>-Bosses will be more diverse",
+    versionLog:"-Added snails<br>-Added shop tags to shops<br>-Auto mode WIP",
     state:"introduction",
     log:[],
     updateObj:undefined,
@@ -67,6 +68,352 @@ var game={
         }
         
         this.updateText();
+        
+        if(auto && !dead && !autolock){
+            
+            var newstate="";
+            //AUTO MODE
+            if(player.state=="free"){
+                if(autostate=="" && player.hp<=player.totalHp/2 && player.gold>=3){
+                    autostate="heal";
+                }
+            }
+            if(player.state=="free"){
+                //Buy weapon/armor/potions, heal, visit location
+                
+                
+                
+                if(autostate=="" || autostate=="grind" || autostate=="supergrind"){
+                    var grindlevel1=Math.ceil(player.level/2)-1;
+                    var grindlevel2=Math.ceil(player.level/2);
+                    if(grindlevel1<1){grindlevel1=1}
+                    if(grindlevel2<2){grindlevel2=2}
+                    if(player.location.events!=undefined && player.location.level>=player.level-1 && autostate==""){
+                        //stay and explore
+                        autolock=true;
+                        setTimeout(function(){autolock=false;explore()},autodelay)
+                    }else if(player.location.events!=undefined && (player.location.level==grindlevel1 || player.location.level==grindlevel2) && autostate=="grind"){
+                        //stay and explore
+                        autolock=true;
+                        setTimeout(function(){autolock=false;explore()},autodelay)
+                    }else if(player.location.events!=undefined && player.location.level==1 && autostate=="supergrind"){
+                        //stay and explore
+                        autolock=true;
+                        setTimeout(function(){autolock=false;explore()},autodelay)
+                    }else{
+                        var bestLocation=undefined;
+                        
+                        for (var property in locations) {
+                            if (locations.hasOwnProperty(property) && player.location!=locations[property]){
+                               
+                                if(autostate==""){
+                                    if(locations[property].level==player.level && locations[property].events!=undefined){
+                                        //go there
+                                        bestLocation=property;
+                                        break;
+                                    }
+
+                                    if(locations[property].level==player.level-1 && locations[property].events!=undefined && bestLocation==undefined){
+                                        //go there
+                                        bestLocation=property;
+                                    }
+                                }else if(autostate=="grind"){
+                                    if(locations[property].level==grindlevel1 && locations[property].events!=undefined){
+                                        //go there
+                                        bestLocation=property;
+                                        break;
+                                    }
+
+                                    if(locations[property].level==grindlevel2 && locations[property].events!=undefined){
+                                        //go there
+                                        bestLocation=property;
+                                    }
+                                    
+                                }else if(autostate=="supergrind"){
+                                    if(locations[property].level==1){
+                                        //go there
+                                        bestLocation=property;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if(bestLocation!=undefined){
+                            //go and explore
+                            autolock=true;
+                            changeLocation(bestLocation)
+                            setTimeout(function(){autolock=false;explore()},autodelay)
+                        }else{
+                            //stay
+                            autolock=true;
+                            setTimeout(function(){autolock=false;explore()},autodelay)
+                        }
+                    }
+                }else if(autostate=="getitems" || autostate=="getweapon" || autostate=="getarmor" || autostate=="getheal" || autostate=="getitem" || autostate=="gethealitem"){
+                    var bestItem=undefined;
+                    var bestGold=0;
+                    var bestLocation=undefined;
+                    var type="weapon"
+                    var isworse=false;
+                    if(autostate=="getitem"){
+                        if(autolastweapon){
+                            type="armor";
+                        }else{
+                            type="weapon"
+                        }
+                        
+                        
+                    }
+                    if(autostate=="getarmor"){type="armor"}
+                    if(autostate=="getheal"){type="heal"}
+                    if(autostate=="gethealitem"){type="heal"}
+                    for (var property in locations) {
+                        if (locations.hasOwnProperty(property)){
+                            if(locations[property].customs!=undefined && locations[property].level<=player.level){
+                                //go there
+                                var customs=locations[property].customs
+                                for(var i=0;i<customs.length;i++){
+                                    var custom=customs[i];
+                                    if(custom[1]=="buy" && custom[4].type==type){
+                                        if(player.gold>=custom[2]){
+                                           if(bestItem==undefined){
+                                               bestItem=locations[property].customs[i][4];
+                                               bestGold=custom[2]
+                                               
+                                           }else if(bestItem.value<custom[4].value){
+                                               bestItem=locations[property].customs[i][4];
+                                               bestGold=custom[2]
+                                           } 
+                                        }
+                                    }
+                                }
+                                if(bestItem!=undefined){
+                                    if(type=="weapon"){
+                                       if(player.weapon.value>=bestItem.value){
+                                           isworse=true;
+                                       }else{
+                                           isworse=false;
+                                       }
+                                   }
+                                   if(type=="armor"){
+                                       if(player.armor.value>=bestItem.value){
+                                           isworse=true;
+                                       }else{
+                                           isworse=false;
+                                       }
+                                   }
+                                    
+                                    bestLocation=property;
+                                }
+                            }
+                        }
+                    }
+
+                    if(bestLocation!=undefined){
+                        //go and explore
+                        autolock=true;
+                        newstate="";
+                        if(autostate=="getitems"){
+                            newstate="getarmor";
+                        }
+                        if(autostate=="gethealitem"){
+                            newstate="getitem";
+                        }
+                        if(autostate=="getitem"){
+                            if(type=="weapon"){
+                                autolastweapon=true;
+                            }else if(type=="armor"){
+                                autolastweapon=false;
+                            }
+                        }
+                        
+                        if((type=="weapon" || type=="armor") && isworse){
+                            if(player.gold>=10){
+                                newstate="gethealitem";
+                                setTimeout(function(){autostate=newstate;autolock=false;game.update()},autodelay)
+                            }else if(player.hp>3 && player.hp<=Math.floor(player.totalHp/3)){
+                                newstate="grind";
+                                setTimeout(function(){autostate=newstate;autolock=false;game.update()},autodelay)
+                            }else if(player.hp<=3){
+                                newstate="supergrind";
+                                setTimeout(function(){autostate=newstate;autolock=false;game.update()},autodelay)
+                            }else{
+                                setTimeout(function(){autostate=newstate;autolock=false;game.update()},autodelay)
+                            }
+                        }else{
+                            changeLocation(bestLocation)
+                            setTimeout(function(){autostate=newstate;autolock=false;buy(bestGold,bestItem)},autodelay)
+                        }
+                        
+                        
+                    }else{
+                        //grind money
+                        autolock=true;
+                        if(player.hp<=3){
+                            newstate="supergrind";
+                        }else{
+                            newstate="grind";
+                        }
+                        
+                        setTimeout(function(){autostate=newstate;autolock=false;game.update()},autodelay)
+                    }
+                }else if(autostate=="heal"){
+                    var bestHeal=undefined;
+                    var bestGold=0;
+                    var bestLocation=undefined;
+                    for (var property in locations) {
+                        if (locations.hasOwnProperty(property) && player.location!=locations[property]){
+                            if(locations[property].customs!=undefined && locations[property].level<=player.level){
+                                //go there
+                                var customs=locations[property].customs
+                                for(var i=0;i<customs.length;i++){
+                                    
+                                    var custom=customs[i];
+                                    if(custom[1]=="heal"){
+                                        if(player.gold>=custom[2]){
+                                           if(bestItem==undefined){
+                                               bestHeal=locations[property].customs[i][3];
+                                               bestGold=custom[2]
+                                           }else if(bestHeal<custom[3]){
+                                               bestHeal=locations[property].customs[i][3];
+                                               bestGold=custom[2]
+                                           } 
+                                        }
+                                    }
+                                }
+                                if(bestHeal!=undefined){
+                                    bestLocation=property;
+                                }
+                                
+                                break;
+                            }
+                        }
+                    }
+
+                    if(bestLocation!=undefined){
+                        //go and explore
+                        autolock=true;
+                        newstate="";
+                        changeLocation(bestLocation)
+                        setTimeout(function(){autostate=newstate;autolock=false;heal(bestGold,bestHeal)},autodelay)
+                    }else{
+                        //grind money
+                        autolock=true;
+                        if(player.hp<=3){
+                            newstate="supergrind";
+                        }else{
+                            newstate="grind";
+                        }
+                        setTimeout(function(){autostate=newstate;autolock=false;game.update()},autodelay)
+                    }
+                }
+            }else if(player.state=="battle" && !autolock){
+                //Attack/run/heal
+                //max possible ene dmg
+                var variableEneDmg=Math.ceil(player.enemy.atk/4);
+                var eneDmg=Math.ceil((variableEneDmg+player.enemy.atk)-player.armor.value);
+
+                if(eneDmg<=0){eneDmg=1;}
+                if(player.enemy.atk==0){eneDmg=0;}
+                if(eneDmg>=player.hp){
+                     var variableDmg=Math.ceil(-player.weapon.value/4);
+
+                    var dmg=Math.ceil(variableDmg+player.weapon.value+player.strength)-player.enemy.def;
+                    if(dmg<player.enemy.hp && player.hp==1 && player.gold<=2){
+                        
+                    }
+                    if(dmg>=player.enemy.hp){
+                        setTimeout(function(){autolock=false;attack()},autodelay);
+                    }else if(eneDmg<player.totalHp){
+                        //heal
+                        if(player.items.length>0){
+                            var bestHeal=undefined;
+                            for(var i=0;i<player.items.length;i++){
+                                var item=player.items[i];
+                                if(eneDmg<player.hp+item.value){
+                                    
+                                    if(bestHeal==undefined){
+                                        bestHeal=player.items[i];
+                                    }else{
+                                        if(item.value<=bestHeal.value){
+                                            bestHeal=player.items[i];
+                                        }
+                                    }
+                                }
+                            }
+                            if(bestHeal==undefined && !autolock){
+                                //run
+                                autolock=true;
+                               newstate="gethealitem"
+                            if(player.gold<=10){newstate="heal"}
+                            if(player.gold<=2){
+                                if(player.hp<=3){
+                                    newstate="supergrind";
+                                }else{
+                                    newstate="grind";
+                                }
+                            }
+
+                                setTimeout(function(){autostate=newstate;autolock=false;run()},autodelay);
+                            }else if(!autolock){
+                                autolock=true;
+                                setTimeout(function(){autolock=false;heal(0,bestHeal.value,bestHeal.name)},autodelay)
+                            }
+                        }else if(!autolock){
+                            autolock=true;
+                            newstate="gethealitem"
+                            if(player.gold<=10){newstate="heal"}
+                            if(player.gold<=2){
+                                if(player.hp<=3){
+                                    newstate="supergrind";
+                                }else{
+                                    newstate="grind";
+                                }
+                            }
+                                
+                            setTimeout(function(){autostate=newstate;autolock=false;run()},autodelay);
+                        }
+                    }else if(!autolock){
+                        autolock=true;
+                        newstate="getarmor";
+                                
+                        setTimeout(function(){autostate=newstate;autolock=false;run()},autodelay);
+                    }
+                }else if(!autolock){
+                    autolock=true;
+                    //atk
+                    setTimeout(function(){autolock=false;attack()},autodelay);
+                }
+            }else if(player.state=="level" && !autolock){
+                autolock=true;
+                //choose health/strength/luck
+                var stats=["health","strength","luck"];
+                var stat = stats[Math.floor(Math.random()*stats.length)];
+                
+               if(player.gold>=10){
+                   newstate="getitem";
+               } 
+                
+                setTimeout(function(){autostate=newstate;autolock=false;levelup(stat);game.update()},autodelay)
+                
+            }
+            
+            
+            //show state
+            
+            var desc=player.location.description.charAt(0).toLowerCase()+player.location.description.substring(1);
+            var state="exploring "+desc;
+            if(autostate=="heal"){state="trying to sleep"}
+            if(autostate=="getitems"){state="shopping new equipments"}
+            if(autostate=="getheal"){state="shopping healing items"}
+            if(autostate=="gethealitem"){state="shopping new items"}
+            if(autostate=="getweapon"){state="shopping weapons"}
+            if(autostate=="grind"){state="grinding for money and xp"}
+            if(autostate=="supergrind"){state="really grinding for money and xp"}
+            $("#autoState").html("Currently "+state);
+            
+            //setTimeout(function(){game.update()},100)
+        }
     },
     
     updateText:function(){
@@ -258,21 +605,19 @@ var game={
                 numberCount=-999;
             }
             if (locations.hasOwnProperty(property) && player.location!=locations[property] && locked==false && numberShown<game.maxShown) {
-                if(locations[property].level>player.level){
+                if(locations[property].level==player.level+1){
                     //add locked button
                     locked=true;
                     $("#locationList").append(
                     "<button class='locked button buttonGreen'>"+capitalize(locations[property].name)+" (Locked until level "+locations[property].level+")</button><br>")
-                }else{
+                    numberShown++;
+                }else if(locations[property].level<=player.level){
                     //add normal location button
                     $("#locationList").append(
                     "<button class='button buttonGreen' onclick='changeLocation(\""+property+"\")'>"+capitalize(locations[property].name)+"</button><br>")
+                    numberShown++;
                     
                 }
-                //calculate number of shown buttons
-                numberShown++;
-                
-                
             }
             if (locations.hasOwnProperty(property) && player.location!=locations[property]){
                 //calculate number of locations before the first one shown
@@ -337,7 +682,7 @@ var player={
 
 
 function explore(){
-    if(player.state=="free"){
+    if(player.state=="free" && player.location.events!=undefined){
         var rand=ran(0,100);
         
         var loc=player.location;
@@ -355,7 +700,7 @@ function explore(){
                 player.enemy=event[1];
                 if(event[0]=="unique"){
                     
-                    player.enemy.unique=player.location;
+                    player.enemy.unique=player.location.level;
                 }
                 
                 if(event[0]=="enemy"){
@@ -465,14 +810,27 @@ function attack(){
             
             $("#eventActive").fadeOut(fadingTime,function(){
                 if(player.enemy.unique!=undefined){
-                    //dead unique
-                    var locationUnique=player.enemy.unique;
                     
-                    for(var i=0;i<player.location.events.length;i++){
-                        var event=player.location.events[i][1];
-                        if(event==player.enemy){
-                            //destroy enemy
-                            player.location.events.splice(i,1);
+                    var locationUnique=undefined;
+                    //dead unique
+                    for (var property in locations) {
+                            if (locations.hasOwnProperty(property)){
+                                if(locations[property].level==player.enemy.unique){
+                                    locationUnique=locations[property];
+                                }
+                                
+                            }
+                        
+                    }
+                    
+                    if(locationUnique!=undefined){
+
+                        for(var i=0;i<player.location.events.length;i++){
+                            var event=player.location.events[i][1];
+                            if(event==player.enemy){
+                                //destroy enemy
+                                player.location.events.splice(i,1);
+                            }
                         }
                     }
                     
@@ -513,6 +871,8 @@ function attack(){
                 //player dead
                 game.log.push("<span class='dmg'>You died.</span>")
                 
+                dead=true;
+                
             
                 player.enemy.hp=player.enemy.totalHp;
                 player.state="dead";
@@ -534,18 +894,20 @@ function attack(){
 
 
 function run(){
-    $("#eventActive").fadeOut(fadingTime,function(){
-        player.enemy.hp=player.enemy.totalHp;
-        player.state="free";
-        var goldLost=0;
-        if(player.gold>0){
-            goldLost=Math.ceil(player.gold*(0.2-(player.luck/200)));
-            player.gold-=goldLost;
-        }
-        
-        game.log.push("You ran away from the fight, but you lost <b>"+goldLost+"</b> gold.")
-        game.update();
-    })
+    if(player.state=="battle"){
+        $("#eventActive").fadeOut(fadingTime,function(){
+            player.enemy.hp=player.enemy.totalHp;
+            player.state="free";
+            var goldLost=0;
+            if(player.gold>0){
+                goldLost=Math.ceil(player.gold*(0.2-(player.luck/200)));
+                player.gold-=goldLost;
+            }
+
+            game.log.push("You ran away from the fight, but you lost <b>"+goldLost+"</b> gold.")
+            game.update();
+        })
+    }
 }
 
 
@@ -606,7 +968,7 @@ function introVerify(mode){
         player.name=name;
         
         $("#playerName").html(capitalize(name));
-        fadeOutInDiv("introduction","player,#location,#event,#change,#saveButton,#loadButton,#savingInfo,#saveMessage,#heal",fadingTime)
+        fadeOutInDiv("introduction","player,#location,#event,#change,#autoButton,#autoState,#saveButton,#loadButton,#savingInfo,#saveMessage,#heal",fadingTime)
         
         if(localStorage.getItem("player")!=null){
             game.file=(localStorage.getItem("version"));
@@ -693,12 +1055,14 @@ function buy(gold,item,xp){
                     game.log.push("You equipped <b>"+objItem.name+"</b> ("+val+") for <b>"+gold+"</b> gold!");
                 }
                 //remove event?
-                for(var i=0;i<player.location.customs.length;i++){
-                    var custom=player.location.customs[i]
-                    if(custom[4]!=undefined){
-                        if(custom[4].name==objItem.name && custom[5]==0){
-                            custom[5]=1;
-                            break;
+                if(player.location.customs!=undefined){
+                    for(var i=0;i<player.location.customs.length;i++){
+                        var custom=player.location.customs[i]
+                        if(custom[4]!=undefined){
+                            if(custom[4].name==objItem.name && custom[5]==0){
+                                custom[5]=1;
+                                break;
+                            }
                         }
                     }
                 }
@@ -759,8 +1123,30 @@ function equip(obj,show){
     return better;
 }
 
+var auto=false;
+var autostate="";
+var autodelay=10;
+var autocall="";
+var autolock=false;
+var dead=false;
+var autolastweapon=false;
+
+function automode(){
+    if(!auto){auto=true;fadingTime=autodelay/2;$("#autoButton").html("Auto mode (On)")}else if(auto){auto=false;fadingTime=initialFadingTime;$("#autoButton").html("Auto mode (Off)")}
+    
+    if(auto){
+        clearInterval(game.updateObj)
+        game.updateObj=setInterval(game.update.bind(game),autodelay*2);
+    }else{
+        clearInterval(game.updateObj)
+        game.updateObj=setInterval(game.update.bind(game),1000);
+    }
+    
+    game.update();
+}
+
 function save(){
-    if(player.state=="free"){
+    if(player.state=="free" && !dead){
         localStorage.setItem("player",JSON.stringify(player));
         localStorage.setItem("locations",JSON.stringify(locations));
         localStorage.setItem("log",JSON.stringify(game.log));

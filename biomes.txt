@@ -1,0 +1,22 @@
+0
+normal
+-old house
+
+1
+forest
+humid
+desert
+-abandonned house
+-slime kingdom
+
+2
+underground
+mountain
+-tower
+-zombie village
+-skeleton fortress
+-deep ocean
+
+3
+castle
+-dungeon

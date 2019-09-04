@@ -45,7 +45,7 @@ var gen={
         ],
         shopNames:[
             //reference name, actual name, desc
-            ["0village","the village","A small village"],
+            ["0village","a village","A small village"],
             ["0shop","a shop","A small shop"],
             ["0tavern","a tavern","A small tavern"],
         ],
@@ -93,12 +93,17 @@ var gen={
             //ref,name,desc,hp,atk,def,xp,gold,%,loot
             //loot=type,name,val(0->4),chance(%)
             ["a slime","A slimey creature",2,1,0,1,1,60,[
-                ["armor","Slime hat",2,50],
-                ["armor","Slime armor",3,25],
+                ["armor","Slime hat",2,25],
+                ["armor","Slime armor",3,10],
             ]],
             ["a red slime","A red slimey creature",3,1,0,2,1,30],
             ["a angry slime","A angry slimey creature",2,2,0,2,1,30],
             ["a golden slime","A golden slimey creature",2,1,2,1,5,10],
+            ["a snail","A snail",1,1,2,1,1,20],
+            ["a big snail","A big snail",2,1,3,2,2,20,[
+                ["armor","Snail shell",2,25]
+            ]],
+            
         ],
         
         bosses:[
@@ -108,9 +113,102 @@ var gen={
             ["a big slime","A big slimey creature",5,2,0,3,2,70,[
                 ["armor","Slime armor",3,50],
             ]],
-            ["the king slime","The king of all ",5,3,1,4,3,100,[
-                ["armor","King slime crown",4,100],
+            ["the king snail","The king of all snails",4,2,2,3,2,25,[
+                ["armor","King snail shell",4,50],
             ]],
+            ["the king slime","The king of all slimes",5,3,1,4,3,100,[
+                ["armor","King slime crown",4,50],
+            ]],
+        ],
+    },
+    
+    old:{
+        //difficulty from 0 to 4;
+        difficulty:0,
+        names:[
+            //reference name, actual name, desc
+            ["0oldhouse","an old house","An old and damaged house"],
+            ["0oldbasement","an old basement","An old and smelly basement"],
+            ["0oldattic","an old attic","An old and humid attic"],
+            ["0oldcabin","an old cabin","And old and cold cabin"],
+        ],
+        shopNames:[
+            //reference name, actual name, desc
+            ["0oldshop","an old shop","An old shop"],
+            ["0oldgiftshop","an old gift shop","An old gift shop"],
+        ],
+        
+        owners:[
+            "the old guy",
+            "an old man",
+            "an old woman",
+            "an old resident",
+        ],
+        
+        talks:[
+            "Good luck on your adventure!",
+            "This is a place reserved for old things.",
+            "Everything is old around here, even me.",
+            "Watch out for rats and spiders!",
+            "Like a wise old person said:'No shame in running', oh wait that's me.",
+            "You are too young for this place!"
+        ],
+        
+        weapons:[
+            // name, value (0-4), price (0-4)
+            ["Old sword",1,1],
+            ["Overpriced weapon",2,4],
+            ["Damaged bat",1,1],
+            ["Gold sword",3,2],
+        ],
+        
+        armors:[
+            // name, value (0-4), price (0-4)
+            ["Used leather clothes",1,1],
+            ["Rusty armor",2,3],
+            ["Overpriced armor",2,4],
+            ["Gold armor",3,2],
+        ],
+        
+        heals:[
+          // name, value(0-4), price (0-4)
+            ["Spoiled milk",1,1],
+            ["Old water bottle",1,1],
+            ["Used health potion",1,1],
+            ["Great health potion",3,2],
+            
+        ],
+        
+        enemies:[
+            //enemy, appearance %, drop
+            //ref,name,desc,hp,atk,def,xp,gold,%,loot
+            //loot=type,name,val(0->4),chance(%)
+            ["a rat","An old rat",2,1,0,1,1,25],
+            ["a spider","An old spider",2,1,1,2,1,25],
+            ["a big spider","A big spider",3,2,1,3,2,15],
+            ["a big rat","A big rat",2,2,0,2,1,25],
+            ["a mouse","A mouse",1,1,0,1,1,10],
+            ["a big angry rat","A big angry rat",2,3,0,2,2,25],
+            ["an old chest","An old wooden chest",2,0,0,0,1,10],
+            ["an old gold chest","An old gold wooden chest",2,0,0,0,2,4,[
+                ["weapon","Gold sword",3,50],
+                ["armor","Gold armor",3,50],
+            ]],
+            
+            
+        ],
+        
+        bosses:[
+            //enemy, appearance %, drop
+            //ref,name,desc,hp,atk,def,xp,gold,%,loot
+            //loot=type,name,val(0->4),chance(%)
+            ["a huge spider","A huge spider",4,3,1,3,3,50,[
+                ["weapon","Spider leg",2,50],
+            ]],
+            ["a huge rat","A huge rat",4,2,2,2,4,50,[
+                ["weapon","Rat tooth",2,50],
+            ]],
+            ["the dust creature","A huge pile of dust",2,2,4,3,3,25],
         ],
     },
     
@@ -201,18 +299,18 @@ var gen={
         difficulty:1,
         names:[
             //reference name, actual name, desc
-            ["2swamp","the swamp","A big swamp filled with aquatic fauna and flora."],
-            ["2humidForest","the humid forest","An incredibly humid forest."],
-            ["2foggyLake","the foggy lake","An incredibly foggy lake."],
-            ["2lake","the lake","A circular lake."],
-            ["2river","the river","A lively river."],
-            ["2largeRiver","the large river","A large river."],
+            ["1swamp","the swamp","A big swamp filled with aquatic fauna and flora."],
+            ["1humidForest","the humid forest","An incredibly humid forest."],
+            ["1foggyLake","the foggy lake","An incredibly foggy lake."],
+            ["1lake","the lake","A circular lake."],
+            ["1river","the river","A lively river."],
+            ["1largeRiver","the large river","A large river."],
         ],
         shopNames:[
             //reference name, actual name, desc
-            ["2swampShop","the swamp shop","A shop at the entrance of a swamp"],
-            ["2woodenHut","a wooden hut","A wooden humid hut with a smiling owner."],
-            ["2riverMall","the river mall","A small but popular mall near a river."],
+            ["1swampShop","the swamp shop","A shop at the entrance of a swamp"],
+            ["1woodenHut","a wooden hut","A wooden humid hut with a smiling owner."],
+            ["1riverMall","the river mall","A small but popular mall near a river."],
         ],
         
         owners:[
@@ -282,22 +380,102 @@ var gen={
         ],
     },
     
+    desert:{
+        difficulty:1,
+        names:[
+            //reference name, actual name, desc
+            ["1desert","the desert","A flat desert."],
+            ["1sandfield","a sand field","A field full of sand."],
+            ["1sandmountain","a sand mountain","A mountain full of sand."],
+            ["1desertruins","the desert ruins","Ruins in the middle of the desert."],
+        ],
+        shopNames:[
+            //reference name, actual name, desc
+            ["1oasis","the oasis shop","A shop at the entrance of a forest"],
+            ["1sandshop","the sand shop","A shop in the middle of the desert"],
+        ],
+        
+        owners:[
+            "the shop owner",
+            "the sombrero wearing dude",
+            "a sweaty owner",
+        ],
+        
+        talks:[
+            "You can recover your health here.",
+            "Remember to drink lots of water!",
+            "It's so hot today, and basically everyday",
+            "You should buy weapon and armor to defend yourself!",
+            "Legends talk of a scorpion king in the desert",
+            "Watch out for sunburn!",
+        ],
+        
+        weapons:[
+            // name, value (0-4), price (0-4)
+            ["Sandy sword",1,1],
+            ["Dagger of the desert",3,3],
+        ],
+        
+        armors:[
+            // name, value (0-4), price (0-4)
+            ["Sandy clothes",1,1],
+            ["Solid sand armor",3,3],
+        ],
+        
+        heals:[
+          // name, value(0-4), price (0-4)
+            ["Water",2,2],
+            ["Oasis water",3,3],
+            
+        ],
+        
+        enemies:[
+            //enemy, appearance %, drop
+            //ref,name,desc,hp,atk,def,xp,gold,%,loot
+            //loot=type,name,val(0->4),chance(%)
+            ["a scorpion","A scorpion",1,2,2,2,2,25,[
+                ["armor","Small scorpion armor",2,25],
+            ]],
+            ["a vulture","A flying vulture",2,2,0,2,1,20],
+            ["a wanderer","A crazy wanderer",2,1,1,1,1,20],
+            ["a mummy","A mummy",2,1,2,2,2,20],
+            ["a sandworm","A small sandword",2,2,0,1,2,20],
+            ["a sand monster","A sand monster",2,2,2,3,2,25],
+            ["a big scorpion","A big scorpion",2,3,3,3,3,10,[
+                ["armor","Scorpion armor",3,25],
+            ]],
+        ],
+        
+        bosses:[
+            //enemy, appearance %, drop
+            //ref,name,desc,hp,atk,def,xp,gold,%,loot
+            //loot=type,name,val(0->4),chance(%)
+            ["a huge scorpion","A huge scorpion",3,4,3,4,2,50,[
+                ["armor","Scorpion armor",3,75],
+            ]],
+            ["the scorpion king","The scorpion king",3,4,4,4,3,50,[
+                ["armor","Scorpion king amor",4,50],
+            ]],
+            ["a group of vultures","A group of hungry vultures",5,3,1,3,3,50],
+        ],
+    },
+    
     underground:{
         difficulty:2,
         names:[
             //reference name, actual name, desc
-            ["3cave","the caves","A connection of caves."],
-            ["3darkCave","the dark caves","A dark connection of caves."],
-            ["3tunnels","the tunnels","A dim lighted connection of tunnels."],
-            ["3crevasse","the crevasse","The bottom of a large crevasse."],
-            ["3mineshaft","the mineshaft","An abandonned mineshaft."],
-            ["3darkMineshaft","the dark mineshaft","An abandonned and dim lighted mineshaft."],
+            ["2cave","the caves","A connection of caves."],
+            ["2darkCave","the dark caves","A dark connection of caves."],
+            ["2tunnels","the tunnels","A dim lighted connection of tunnels."],
+            ["2crevasse","the crevasse","The bottom of a large crevasse."],
+            ["2mineshaft","the mineshaft","An abandonned mineshaft."],
+            ["2darkMineshaft","the dark mineshaft","An abandonned and dim lighted mineshaft."],
         ],
         shopNames:[
             //reference name, actual name, desc
-            ["3undergroundShop","the underground shop","An underground shop"],
-            ["3cavernTavern","the cavern tavern","A popular tavern even though it is difficult of access."],
-            ["3mineshaftHouse","the mineshaft house","A small house at the entrace of a mineshaft."],
+            ["2undergroundShop","the underground shop","An underground shop"],
+            ["2cavernTavern","the cavern tavern","A popular tavern even though it is difficult of access."],
+            ["2mineshaftHouse","the mineshaft house","A small house at the entrace of a mineshaft."],
         ],
         
         owners:[
@@ -372,18 +550,18 @@ var gen={
         difficulty:2,
         names:[
             //reference name, actual name, desc
-            ["4mountain","the mountain","A mountain."],
-            ["4snowyMountain","the snowy mountain","A mountain with a snowy top."],
-            ["4steepHill","the steep hill","A steep hill."],
-            ["4rockyMountain","the rocky mountain","A rocky mountain."],
-            ["4mountOrange","the mount orange","A mount whose rocks are orange."],
-            ["4friskyMountain","the frisky mountain","A frisky mountain."],
+            ["2mountain","the mountain","A mountain."],
+            ["2snowyMountain","the snowy mountain","A mountain with a snowy top."],
+            ["2steepHill","the steep hill","A steep hill."],
+            ["2rockyMountain","the rocky mountain","A rocky mountain."],
+            ["2mountOrange","the mount orange","A mount whose rocks are orange."],
+            ["2friskyMountain","the frisky mountain","A frisky mountain."],
         ],
         shopNames:[
             //reference name, actual name, desc
-            ["4altitudeShop","the altitude shop","A shop on top of a mountain"],
-            ["4hillsideShop","the hill side shop","A popular shop that is on the side of a hill."],
-            ["4footShop","the foot shop","A small shop at the foot of a mountain."],
+            ["2altitudeShop","the altitude shop","A shop on top of a mountain"],
+            ["2hillsideShop","the hill side shop","A popular shop that is on the side of a hill."],
+            ["2footShop","the foot shop","A small shop at the foot of a mountain."],
         ],
         
         owners:[
@@ -459,19 +637,19 @@ var gen={
         difficulty:3,
         names:[
             //reference name, actual name, desc
-            ["5castle","the castle","A medieval castle."],
-            ["5tower","the tower","A tall tower."],
-            ["5kingdom","the kingdom","A gloomy kingdom."],
-            ["5castlewalls","the castle walls","On top of the castle walls."],
-            ["5keep","the keep","A large castle keep."],
-            ["5chapel","the chapel","A gloomy chapel."],
-            ["5church","the church","A gloomy church."],
+            ["3castle","the castle","A medieval castle."],
+            ["3tower","the tower","A tall tower."],
+            ["3kingdom","the kingdom","A gloomy kingdom."],
+            ["3castlewalls","the castle walls","On top of the castle walls."],
+            ["3keep","the keep","A large castle keep."],
+            ["3chapel","the chapel","A gloomy chapel."],
+            ["3church","the church","A gloomy church."],
         ],
         shopNames:[
             //reference name, actual name, desc
-            ["5castleshop","the castle shop","a friendly shop near the castle"],
-            ["5castlemarket","the market","A market placed outside the castle."],
-            ["5goblininn","the goblin inn","A popular inn."],
+            ["3castleshop","the castle shop","a friendly shop near the castle"],
+            ["3castlemarket","the market","A market placed outside the castle."],
+            ["3goblininn","the goblin inn","A popular inn."],
         ],
         
         owners:[
@@ -567,7 +745,7 @@ var gen={
 var firstLocation=undefined;
 
 function generate(){
-    var maxLocations=99;
+    var maxLocations=299;
     var currLocationsPerDifficulty=0;
     var maxLocationsPerDifficulty=1;
     
@@ -619,6 +797,7 @@ function generate(){
         //check if shop and change theme each 3 locations
         var isShop=false;
         var bossSpawn=false;
+        var hasBoss=false;
         
         if(i%themeLength==0){
             isShop=true;
@@ -664,6 +843,7 @@ function generate(){
             }
         }else if((i+1)%themeLength==0){
             bossSpawn=true;
+            hasBoss=true;
         }
         if(i==1){
             isShop=false;
@@ -688,7 +868,6 @@ function generate(){
         
         if(triesCpt>=maxTries){
             //stop the loop
-            console.log("loop finished: max tries acheived")
             break;
         }
         
@@ -764,7 +943,7 @@ function generate(){
                     if(ce[6]==0){cGold=0;}
                     
                     var cPercent=ce[7];
-                    if(type=="unique"){
+                    if(type=="unique" || type=="boss"){
                         cPercent=100;
                     }else{
                         percent+=cPercent;
@@ -824,6 +1003,8 @@ function generate(){
                 }
                 randName[1]+=" (NG"+plus+")"
             }
+            
+            
             
             
             generatedLocations[randName[0]]=new Location(randName[1],randName[2],levelRequired,generatedEnemies)
@@ -936,6 +1117,16 @@ function generate(){
             potionEvent[5]=2;
             
             generatedEvents.push(potionEvent);
+            
+            randName[1]+=" (Shop)";
+            
+            if(themesRestart>0){
+                var plus="";
+                for(var cptPlus=0;cptPlus<themesRestart;cptPlus++){
+                    plus+="+";
+                }
+                randName[1]+=" (NG"+plus+")"
+            }
             
             
             generatedLocations[randName[0]]=new Location(randName[1],randName[2],levelRequired,undefined,generatedEvents)
