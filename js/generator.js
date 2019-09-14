@@ -738,6 +738,114 @@ var gen={
             ]],
         ],
     },
+    
+    fire:{
+        difficulty:3,
+        names:[
+            //reference name, actual name, desc
+            ["3firemountain","the fire mountain","The fire mountain."],
+            ["3fireplains","the fire plains","Plains filled with fire and lava."],
+            ["3burningforest","the burning forest","A forest that is always burning."],
+            ["3volcano","the volcano","A huge volcano, always erupting."],
+            ["3firecastle","the fire castle","A castle filled with fire."],
+            ["3firetower","the fire tower","A tower that is always burning at the top."],
+            ["3firelands","the fire lands","Lands filled with fire and lava."],
+        ],
+        shopNames:[
+            //reference name, actual name, desc
+            ["3fireshop","the fire shop","a shop that is lit"],
+            ["3burningshop","the burning shop","A shop that is always burning."],
+            ["3hotinn","the hot inn","A popular inn that is always too hot."],
+        ],
+        
+        owners:[
+            "the fire owner",
+            "the burning owner",
+            "the demon owner",
+        ],
+        
+        talks:[
+            "Welcome to the fire lands!",
+            "Hope you're not too hot.",
+            "Hope you have sunscreen.",
+            "These lands are hotter than the desert.",
+            "Some people talk about a living volcano.",
+            "Be aware of the volcano.",
+            "Creatures often have high attack and low defense.",
+            "Creatures made of lava are more powerful than the ones made of fire.",
+        ],
+        
+        weapons:[
+            // name, value (0-4), price (0-4)
+            ["Fire sword",3,3],
+            ["Fire katana",2,2],
+            ["Fire bow",2,2],
+        ],
+        
+        armors:[
+            // name, value (0-4), price (0-4)
+            ["Fire armor",3,3],
+            ["Burning armor",2,2],
+            ["Armor that is burned",1,1],
+        ],
+        
+        heals:[
+          // name, value(0-4), price (0-4)
+            ["Fire steak",3,3],
+            ["Burning meal",1,1],
+            ["Overcooked steak",1,1],
+            ["Lump of eatable coal",1,1],
+            
+        ],
+        
+        enemies:[
+            //enemy, appearance %, drop
+            //ref,name,desc,hp,atk,def,xp,gold,%,loot
+            //loot=type,name,val(0->4),chance(%)
+            ["a fire knight","An angry looking fire knight",2,3,1,2,2,30,[
+                ["armor","Fire armor",3,20],
+                ["weapon","Fire sword",3,20],
+            ]],
+            
+            ["a fire archer","A skilled fire archer",2,3,1,2,2,30,[
+                ["weapon","Fire bow",2,25]
+            ]],
+            
+            ["a fire creature","A creature made of fire",2,2,1,2,1,20],
+            ["a burning animal","A burning animal",1,2,1,1,1,20],
+            ["a coal monster","A monster made of coal",2,3,2,3,2,20,[
+                ["armor","Coal armor",3,10]
+            ]],
+            
+            ["a lava creature","A dangerous creature made of lava",1,4,1,2,2,20,[
+                ["weapon","Lava sword",4,5],
+            ]],
+            
+            ["a lava monster","A big dangerous monster made of lava",2,4,1,3,2,20,[
+                ["weapon","Lava sword",4,5],
+            ]],
+            
+            ["a burning chest","A burning chest that will burn you",2,1,1,1,3,10,[
+                ["weapon","Fire katana",2,25],
+                ["armor","Burning armor",2,25],
+                ["weapon","Fire sword",3,10],
+                ["armor","Coal armor",3,10],
+                ["weapon","Lava sword",4,5],
+            ]],
+            
+        ],
+        
+        bosses:[
+            //enemy, appearance %, drop
+            //ref,name,desc,hp,atk,def,xp,gold,%,loot
+            //loot=type,name,val(0->4),chance(%)
+            ["the lava knight","The lava knight",2,5,2,4,3,80,[
+                ["weapon","The lava knight sword",4,5],
+                ["armor","The lava knight amor",3,5],
+            ]],
+            ["the living volcano","The living volcano, one of the strongest monster ever witnessed",6,5,6,6,6,100],
+        ],
+    },
 }
 
 
